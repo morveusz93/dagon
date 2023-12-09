@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "dagon"
+version = "0.1.0"
+description = ""
+authors = ["morv"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+discord = "^2.3.2"
+pynacl = "^1.5.0"
+yt-dlp = "^2023.11.16"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
