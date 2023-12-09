@@ -3,18 +3,28 @@ from discord.ext import commands
 import yt_dlp as youtube_dl
 import os
 
-
-TOKEN = os.getenv('DISCORD_TOKEN')
+TOKEN = os.getenv("DISCORD_TOKEN")
 
 intents = discord.Intents.default()
 intents.message_content = True
 
-bot = commands.Bot(command_prefix="!", intents=intents)
+bot = commands.Bot(command_prefix="!d", intents=intents)
 
 
 @bot.event
 async def on_ready():
     print(f"Zalogowano jako {bot.user.name}")
+
+
+@bot.event
+async def on_voice_state_update(member, before, after):
+    voice_client = discord.utils.get(bot.voice_clients, guild=member.guild)
+    if (
+        voice_client
+        and len(voice_client.channel.members) == 1
+        and bot.user in voice_client.channel.members
+    ):
+        await voice_client.disconnect()
 
 
 @bot.command()
@@ -26,9 +36,9 @@ async def join(ctx):
         if voice_client:
             await voice_client.disconnect()
         await channel.connect()
-        await ctx.send(f"Bot dołączył do kanału głosowego: {channel.name}")
+        await ctx.send(f"Dagon has been summoned to the voice channel: {channel.name}")
     else:
-        await ctx.send("Musisz być na kanale głosowym, aby używać tego bota.")
+        await ctx.send("You must be in a voice channel to summon Dagon.")
 
 
 @bot.command()
@@ -41,11 +51,11 @@ async def leave(ctx):
 @bot.command()
 async def play(ctx, url=None):
     if not url:
-        return await ctx.send('Musisz podac link do YT: "!play <link>"')
+        return await ctx.send('You must provide a YouTube link: "!play <link>"')
     voice_channel = ctx.author.voice.channel
 
     if not voice_channel:
-        return await ctx.send("Musisz być na kanale głosowym, aby używać tego bota.")
+        return await ctx.send("You must be in a voice channel to summon Dagon.")
 
     voice_client = discord.utils.get(bot.voice_clients, guild=ctx.guild)
 
@@ -55,11 +65,11 @@ async def play(ctx, url=None):
         except Exception as e:
             print(f"Wystąpił błąd: {e}")
             return await ctx.send(
-                "Wystąpił błąd podczas dołączania do kanału głosowego."
+                "Error occurred while summoning Dagon to the voice channel."
             )
 
     elif voice_client.channel != voice_channel:
-        return await ctx.send("Bot już jest na innym kanale głosowym.")
+        return await ctx.send("Dagon is already summoned to another voice channel.")
 
     ydl_opts = {
         "format": "bestaudio",
@@ -76,7 +86,7 @@ async def play(ctx, url=None):
         try:
             info = ydl.extract_info(url, download=False)
         except youtube_dl.utils.DownloadError:
-            return await ctx.send("Wystąpił błąd. Upewnij się, że link jest poprawny.")
+            return await ctx.send("Error occurred. Make sure the link is correct.")
         formats = [
             x for x in info["formats"] if x["resolution"].lower() == "audio only"
         ]
@@ -88,13 +98,15 @@ async def play(ctx, url=None):
         try:
             music_url = defaults[0].get("url")
         except KeyError:
-            ctx.send("Wystąpił błąd podczas pobrania muzyki z filmu, podaj inny link.")
+            ctx.send(
+                "Error occurred while fetching music from the video, please provide another link."
+            )
         voice_client.play(
             discord.FFmpegPCMAudio(music_url),
-            after=lambda e: print("Odtwarzanie zakończone"),
+            after=lambda e: print("Playback finished"),
         )
 
-    await ctx.send("Odtwarzam muzykę!")
+    await ctx.send("Summoning Dagon to play music!")
 
 
 bot.run(TOKEN)
