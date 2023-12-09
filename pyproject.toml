@@ -10,6 +10,7 @@ python = "^3.11"
 discord = "^2.3.2"
 pynacl = "^1.5.0"
 yt-dlp = "^2023.11.16"
+black = "^23.11.0"
 
 
 [build-system]
