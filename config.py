@@ -1,5 +1,5 @@
 ydl_opts = {
-    "format": "bestaudio",
+    "format": "bestaudio/best",
     "postprocessors": [
         {
             "key": "FFmpegExtractAudio",
@@ -7,4 +7,6 @@ ydl_opts = {
             "preferredquality": "192",
         }
     ],
+    "extract_flat": True,
+    "quiet": False,
 }

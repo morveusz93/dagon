@@ -1,7 +1,5 @@
 def get_playback_url(info):
-    formats = [
-        x for x in info["formats"] if x["resolution"].lower() == "audio only"
-    ]
+    formats = [x for x in info["formats"] if x["resolution"].lower() == "audio only"]
     defaults = [d for d in formats if "medium" in d["format"]]
     if not defaults:
         defaults = [d for d in formats if d.get("format_note") == "Default"]
