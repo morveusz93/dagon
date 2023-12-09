@@ -3,9 +3,7 @@ from discord.ext import commands
 import yt_dlp as youtube_dl
 
 
-TOKEN = (
-    "MTE4MjczOTQ3MTAzMzE3MjA4MQ.GWelbj.Yln1aGKQ2dSvEUXx61qfgcU3H7oKak7Ia-VSR4"
-)
+TOKEN = "MTE4MjczOTQ3MTAzMzE3MjA4MQ.GWelbj.Yln1aGKQ2dSvEUXx61qfgcU3H7oKak7Ia-VSR4"
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -46,9 +44,7 @@ async def play(ctx, url=None):
     voice_channel = ctx.author.voice.channel
 
     if not voice_channel:
-        return await ctx.send(
-            "Musisz być na kanale głosowym, aby używać tego bota."
-        )
+        return await ctx.send("Musisz być na kanale głosowym, aby używać tego bota.")
 
     voice_client = discord.utils.get(bot.voice_clients, guild=ctx.guild)
 
@@ -79,27 +75,19 @@ async def play(ctx, url=None):
         try:
             info = ydl.extract_info(url, download=False)
         except youtube_dl.utils.DownloadError:
-            return await ctx.send(
-                "Wystąpił błąd. Upewnij się, że link jest poprawny."
-            )
+            return await ctx.send("Wystąpił błąd. Upewnij się, że link jest poprawny.")
         formats = [
-            x
-            for x in info["formats"]
-            if x["resolution"].lower() == "audio only"
+            x for x in info["formats"] if x["resolution"].lower() == "audio only"
         ]
         defaults = [d for d in formats if "medium" in d["format"]]
         if not defaults:
-            defaults = [
-                d for d in formats if d.get("format_note") == "Default"
-            ]
+            defaults = [d for d in formats if d.get("format_note") == "Default"]
         if not defaults:
             defaults = formats
         try:
             music_url = defaults[0].get("url")
         except KeyError:
-            ctx.send(
-                "Wystąpił błąd podczas pobrania muzyki z filmu, podaj inny link."
-            )
+            ctx.send("Wystąpił błąd podczas pobrania muzyki z filmu, podaj inny link.")
         voice_client.play(
             discord.FFmpegPCMAudio(music_url),
             after=lambda e: print("Odtwarzanie zakończone"),
