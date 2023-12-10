@@ -56,15 +56,16 @@ async def play(ctx, url=None):
     if not url:
         return await ctx.send('You must provide a YouTube link: "!play <link>"')
 
-    author_voice_channel = ctx.author.voice.channel
-    if not author_voice_channel:
+    if not ctx.author.voice:
         return await ctx.send("You must be in a voice channel to summon Dagon.")
+    author_voice_channel = ctx.author.voice.channel
 
     bot_voice_channel = discord.utils.get(bot.voice_clients, guild=ctx.guild)
 
     if not bot_voice_channel or not bot_voice_channel.is_connected():
         try:
             bot_voice_channel = await author_voice_channel.connect()
+            await ctx.send("Summoning Dagon to play music!")
         except Exception as e:
             print(f"Error occurred: {e}")
             return await ctx.send(
@@ -102,9 +103,7 @@ async def play(ctx, url=None):
                         )
                         while bot_voice_channel.is_playing():
                             await asyncio.sleep(1)
-                await ctx.send(
-                    f"Summoning Dagon to play the playlist from {playlist_url}!"
-                )
+                await ctx.send("Dagon plays music!")
         else:
             # one video
             playback_url = get_playback_url(info)
@@ -117,14 +116,14 @@ async def play(ctx, url=None):
                 discord.FFmpegPCMAudio(playback_url),
                 after=lambda e: print("Playback finished"),
             )
-            await ctx.send("Summoning Dagon to play music!")
+            await ctx.send("Dagon plays music!")
 
 
 @bot.command()
 async def stop(ctx):
     voice_client = discord.utils.get(bot.voice_clients, guild=ctx.guild)
 
-    if voice_client and voice_client.is_playing():
+    if voice_client:
         voice_client.stop()
         await ctx.send("Playback stopped.")
     else:

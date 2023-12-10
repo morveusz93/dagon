@@ -1,6 +1,11 @@
 # TODO
 
-1.  Pauzowanie i wznawianie utowu w playliście
-2.  Stopowanie całej playlisty
-3.  Poprawa komunikaów w playliście
-4.  Przejście do kolejnego utworu w playliście
+- Pauzowanie i wznawianie utworu w playliście
+- Stopowanie całej playlisty
+- Poprawa komunikaów w playliście
+- Przejście do kolejnego utworu w playliście
+- Zmiana głośności absolutnej
+- Zmiana głośności o x
+- Odtwarzanie pierwszego utworu z playlisty zanim zostaną pobrane pozostałe
+- Dockeryzacja
+- Deployment
