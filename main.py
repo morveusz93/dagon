@@ -85,10 +85,7 @@ async def play(ctx, url=None):
             # playlist
             playlist_url = url
             for entry in info["entries"]:
-                url = None
-                if "url" in entry:
-                    url = entry["url"]
-                if url:
+                if url := entry.get("url"):
                     try:
                         info = ydl.extract_info(url, download=False)
                     except youtube_dl.utils.DownloadError:
@@ -103,7 +100,7 @@ async def play(ctx, url=None):
                         )
                         while bot_voice_channel.is_playing():
                             await asyncio.sleep(1)
-                await ctx.send("Dagon plays music!")
+                        await ctx.send("Dagon plays music!")
         else:
             # one video
             playback_url = get_playback_url(info)
@@ -136,7 +133,7 @@ async def pause(ctx):
 
     if voice_client and voice_client.is_playing():
         voice_client.pause()
-        await ctx.send("Playback paused.")
+        await ctx.send("Playback paused. Use !resume to continue or !play to play next track.")
     else:
         await ctx.send("Dagon is not currently playing any music.")
 

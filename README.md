@@ -7,5 +7,6 @@
 - Zmiana głośności absolutnej
 - Zmiana głośności o x
 - Odtwarzanie pierwszego utworu z playlisty zanim zostaną pobrane pozostałe
+- Wyszukiwanie muzyki - !search <tytuł>
 - Dockeryzacja
 - Deployment
