@@ -24,7 +24,7 @@ class Music(commands.Cog):
         async with ctx.typing():
             player = await YTDLSource.from_url(url, loop=self.bot.loop)
 
-            if ctx.voice_client.is_playing():
+            if ctx.voice_client.is_playing() or ctx.voice_client.is_paused():
                 ctx.voice_client.stop()
 
             ctx.voice_client.play(
