@@ -1,10 +1,12 @@
-import discord
-from discord.ext import commands
-import yt_dlp as youtube_dl
+import asyncio
 import os
+
+import discord
+import yt_dlp as youtube_dl
+from discord.ext import commands
+
 from config import ydl_opts
 from legacy.utils import get_playback_url
-import asyncio
 
 TOKEN = os.getenv("DISCORD_TOKEN")
 
@@ -133,7 +135,9 @@ async def pause(ctx):
 
     if voice_client and voice_client.is_playing():
         voice_client.pause()
-        await ctx.send("Playback paused. Use !resume to continue or !play to play next track.")
+        await ctx.send(
+            "Playback paused. Use !resume to continue or !play to play next track."
+        )
     else:
         await ctx.send("Dagon is not currently playing any music.")
 

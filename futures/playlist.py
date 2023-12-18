@@ -1,5 +1,6 @@
 from queue import Queue
 
+
 class Playlist:
     def __init__(self, id: int):
         self.id = id

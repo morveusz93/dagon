@@ -1,13 +1,12 @@
+import asyncio
 import functools
 from typing import Dict
-import asyncio
 
 import discord
-from discord.ext import commands
 import yt_dlp as youtube_dl
+from discord.ext import commands
 
 from futures.playlist import Playlist
-
 
 
 class Music(commands.Cog):
@@ -28,26 +27,28 @@ class Music(commands.Cog):
             voice_channel = ctx.author.voice.channel
             if ctx.author.voice is None:
                 await ctx.send("`You are not in a voice channel!`")
-            if (ctx.author.voice):
+            if ctx.author.voice:
                 await voice_channel.connect()
-        else: 
+        else:
             pass
-        FFMPEG_OPTIONS = {'before_options':'-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options' : '-vn'}
-        YDL_OPTIONS = {'format':'bestaudio', 'default_search':'auto'}
+        FFMPEG_OPTIONS = {
+            "before_options": "-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5",
+            "options": "-vn",
+        }
+        YDL_OPTIONS = {"format": "bestaudio", "default_search": "auto"}
 
         with youtube_dl.YoutubeDL(YDL_OPTIONS) as ydl:
             info = ydl.extract_info(url, download=False)
 
-            if 'entries' in info:
-                url2 = info['entries'][0]['formats'][0]['url']
-                title = info['entries'][0]['title']
-            elif 'formats' in  info:
-                url2 = info['formats'][0]['url']
-                title = info['title']
-            
+            if "entries" in info:
+                url2 = info["entries"][0]["formats"][0]["url"]
+                title = info["entries"][0]["title"]
+            elif "formats" in info:
+                url2 = info["formats"][0]["url"]
+                title = info["title"]
+
             source = await discord.FFmpegOpusAudio.from_probe(url2, **FFMPEG_OPTIONS)
             self.bot.dispatch("play_command", ctx, source, title)
-        
 
     @commands.Cog.listener()
     async def on_play_command(self, ctx: commands.Context, song, title: str):
@@ -68,8 +69,14 @@ class Music(commands.Cog):
             await ctx.send("No more songs in the playlist")
             return await ctx.guild.voice_client.disconnect()
         await ctx.send(f"Now playing: {title}")
-        
-        ctx.guild.voice_client.play(song, after=functools.partial(lambda x: self.bot.loop.create_task(self.check_play(ctx))))
+
+        ctx.guild.voice_client.play(
+            song,
+            after=functools.partial(
+                lambda x: self.bot.loop.create_task(self.check_play(ctx))
+            ),
+        )
+
 
 async def setup_music(bot):
     await bot.add_cog(Music(bot))
