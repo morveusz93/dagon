@@ -13,6 +13,13 @@ class Music(commands.Cog):
         await ctx.send("Dagon has been summoned!")
 
     @commands.command()
+    async def leave(self, ctx):
+        voice_channel = discord.utils.get(self.bot.voice_clients, guild=ctx.guild)
+        if voice_channel:
+            await ctx.send("Dagon has been banished!")
+            await voice_channel.disconnect()
+
+    @commands.command()
     async def play(self, ctx, *, url):
         async with ctx.typing():
             player = await YTDLSource.from_url(url, loop=self.bot.loop)
