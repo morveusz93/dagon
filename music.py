@@ -14,10 +14,10 @@ class Music(commands.Cog):
 
     @commands.command()
     async def leave(self, ctx):
-        voice_channel = discord.utils.get(self.bot.voice_clients, guild=ctx.guild)
-        if voice_channel:
+        voice_client = self.get_voice_client(ctx)
+        if voice_client:
             await ctx.send("Dagon has been banished!")
-            await voice_channel.disconnect()
+            await voice_client.disconnect()
 
     @commands.command()
     async def play(self, ctx, *, url):
@@ -37,7 +37,7 @@ class Music(commands.Cog):
     @commands.command()
     async def vol(self, ctx, volume: int):
         if ctx.voice_client is None:
-            return await ctx.send("You must be in a voice channel to summon Dagon.")
+            return await ctx.send("You must be in a voice channel to talk to Dagon.")
         if volume > 100 or volume < 0:
             return await ctx.send("Volume must be in range (0-100).")
         self.bot.vol = volume
@@ -46,16 +46,38 @@ class Music(commands.Cog):
 
     @commands.command()
     async def stop(self, ctx):
-        voice_client = discord.utils.get(self.bot.voice_clients, guild=ctx.guild)
+        voice_client = self.get_voice_client(ctx)
 
         if voice_client:
             voice_client.stop()
             await ctx.send("Playback stopped.")
+    
+    @commands.command()
+    async def pause(self, ctx):
+        voice_client = self.get_voice_client(ctx)
+
+        if voice_client and voice_client.is_playing():
+            voice_client.pause()
+            await ctx.send(
+                "Playback paused. Use !resume to continue or !play to play next track."
+            )
+        else:
+            await ctx.send("Dagon is not currently playing any music.")
+
+    @commands.command()
+    async def resume(self, ctx):
+        voice_client = self.get_voice_client(ctx)
+
+        if voice_client and voice_client.is_paused():
+            voice_client.resume()
+            await ctx.send("Playback resumed.")
+        else:
+            await ctx.send("Dagon is not currently paused.")
 
     @play.before_invoke
     @join.before_invoke
     async def ensure_voice(self, ctx):
-        current_bot_channel = discord.utils.get(self.bot.voice_clients, guild=ctx.guild)
+        current_bot_channel = self.get_voice_client(ctx)
         if current_bot_channel and current_bot_channel != ctx.author.voice:
             await current_bot_channel.disconnect()
 
@@ -63,8 +85,11 @@ class Music(commands.Cog):
             await ctx.author.voice.channel.connect()
             await ctx.send("Dagon has been summoned!")
         else:
-            await ctx.send("You are not connected to a voice channel.")
+            await ctx.send("You must be in a voice channel to summon Dagon.")
             raise commands.CommandError("Author not connected to a voice channel.")
+        
+    def get_voice_client(self, ctx):
+        return discord.utils.get(self.bot.voice_clients, guild=ctx.guild)
 
 
 async def setup_music(bot):
