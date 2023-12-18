@@ -30,7 +30,7 @@ class Music(commands.Cog):
     @commands.command()
     async def vol(self, ctx, volume: int):
         if ctx.voice_client is None:
-            return await ctx.send("Not connected to a voice channel.")
+            return await ctx.send("You must be in a voice channel to summon Dagon.")
         if volume > 100 or volume < 0:
             return await ctx.send("Volume must be in range (0-100).")
         self.bot.vol = volume

@@ -10,7 +10,8 @@ class Dagon(commands.Bot):
         intents.message_content = True
 
         super().__init__(
-            command_prefix=commands.when_mentioned_or(command_prefix), intents=intents
+            command_prefix=commands.when_mentioned_or(command_prefix),
+            intents=intents
         )
 
         self.vol = 50
