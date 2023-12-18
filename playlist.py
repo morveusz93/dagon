@@ -2,8 +2,7 @@ from queue import Queue
 
 
 class Playlist:
-    def __init__(self, id: int):
-        self.id = id
+    def __init__(self):
         self.queue: Queue = Queue(maxsize=0)
 
     def add_song(self, song: str):
@@ -12,7 +11,7 @@ class Playlist:
     def get_song(self):
         return self.queue.get()
 
-    def empty_playlist(self):
+    def clear_playlist(self):
         self.queue.clear()
 
     @property

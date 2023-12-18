@@ -19,3 +19,8 @@ class Dagon(commands.Bot):
     async def on_ready(self):
         print(f"Logged in as {self.user} (ID: {self.user.id})")
         print("------")
+
+    async def on_voice_state_update(self, member, before, after):
+        voice_client = discord.utils.get(self.voice_clients, guild=member.guild)
+        if voice_client and len(voice_client.channel.members) == 1:
+            await voice_client.disconnect()
