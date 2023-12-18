@@ -10,7 +10,7 @@ class Music(commands.Cog):
 
     @commands.command()
     async def join(self, ctx):
-        await ctx.send("Dagon has been summoned!")
+        pass
 
     @commands.command()
     async def leave(self, ctx):
@@ -61,6 +61,7 @@ class Music(commands.Cog):
 
         if ctx.author.voice:
             await ctx.author.voice.channel.connect()
+            await ctx.send("Dagon has been summoned!")
         else:
             await ctx.send("You are not connected to a voice channel.")
             raise commands.CommandError("Author not connected to a voice channel.")
