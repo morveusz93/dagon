@@ -14,7 +14,7 @@ class Music(commands.Cog):
 
     @commands.command()
     async def leave(self, ctx):
-        voice_client = self.get_voice_client(ctx)
+        voice_client = ctx.voice_client
         if voice_client:
             await ctx.send("Dagon has been banished!")
             await voice_client.disconnect()
@@ -46,7 +46,7 @@ class Music(commands.Cog):
 
     @commands.command()
     async def stop(self, ctx):
-        voice_client = self.get_voice_client(ctx)
+        voice_client = ctx.voice_client
 
         if voice_client:
             voice_client.stop()
@@ -54,7 +54,7 @@ class Music(commands.Cog):
     
     @commands.command()
     async def pause(self, ctx):
-        voice_client = self.get_voice_client(ctx)
+        voice_client = ctx.voice_client
 
         if voice_client and voice_client.is_playing():
             voice_client.pause()
@@ -66,7 +66,7 @@ class Music(commands.Cog):
 
     @commands.command()
     async def resume(self, ctx):
-        voice_client = self.get_voice_client(ctx)
+        voice_client = ctx.voice_client
 
         if voice_client and voice_client.is_paused():
             voice_client.resume()
@@ -77,7 +77,7 @@ class Music(commands.Cog):
     @play.before_invoke
     @join.before_invoke
     async def ensure_voice(self, ctx):
-        current_bot_channel = self.get_voice_client(ctx)
+        current_bot_channel = ctx.voice_client
         if current_bot_channel and current_bot_channel != ctx.author.voice:
             await current_bot_channel.disconnect()
 
@@ -87,9 +87,6 @@ class Music(commands.Cog):
         else:
             await ctx.send("You must be in a voice channel to summon Dagon.")
             raise commands.CommandError("Author not connected to a voice channel.")
-        
-    def get_voice_client(self, ctx):
-        return discord.utils.get(self.bot.voice_clients, guild=ctx.guild)
 
 
 async def setup_music(bot):
