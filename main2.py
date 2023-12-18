@@ -67,7 +67,6 @@ class Music(commands.Cog):
 
     @commands.command()
     async def stop(self, ctx):
-        # TODO: stop zatrzymuje muzyke ale bot nie opuszcza
         await ctx.voice_client.disconnect()
 
 
