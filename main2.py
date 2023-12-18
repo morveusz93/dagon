@@ -40,16 +40,17 @@ class Music(commands.Cog):
         self.bot = bot
 
     @commands.command()
-    async def join(self, ctx, *, channel: discord.VoiceChannel):
-        if ctx.voice_client is not None:
-            return await ctx.voice_client.move_to(channel)
-
-        await channel.connect()
+    async def join(self, ctx):
+        await ctx.send("Dagon has been summoned!")
 
     @commands.command()
     async def play(self, ctx, *, url):
         async with ctx.typing():
             player = await YTDLSource.from_url(url, loop=self.bot.loop)
+
+            if ctx.voice_client.is_playing():
+                ctx.voice_client.stop()
+
             ctx.voice_client.play(player, after=lambda e: print(f'Player error: {e}') if e else None)
             ctx.voice_client.source.volume = self.bot.vol / 100
 
@@ -67,20 +68,24 @@ class Music(commands.Cog):
 
     @commands.command()
     async def stop(self, ctx):
-        await ctx.voice_client.disconnect()
+        voice_client = discord.utils.get(self.bot.voice_clients, guild=ctx.guild)
 
+        if voice_client:
+            voice_client.stop()
+            await ctx.send("Playback stopped.")
 
     @play.before_invoke
+    @join.before_invoke
     async def ensure_voice(self, ctx):
-        if ctx.voice_client is None:
-            if ctx.author.voice:
-                await ctx.author.voice.channel.connect()
-            else:
-                await ctx.send("You are not connected to a voice channel.")
-                raise commands.CommandError("Author not connected to a voice channel.")
-        elif ctx.voice_client.is_playing():
-            ctx.voice_client.stop()
+        current_bot_channel = discord.utils.get(self.bot.voice_clients, guild=ctx.guild)
+        if current_bot_channel:
+            await current_bot_channel.disconnect()
 
+        if ctx.author.voice:
+            await ctx.author.voice.channel.connect()
+        else:
+            await ctx.send("You are not connected to a voice channel.")
+            raise commands.CommandError("Author not connected to a voice channel.")
 
 
 async def main():
