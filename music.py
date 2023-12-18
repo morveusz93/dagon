@@ -15,7 +15,7 @@ class Music(commands.Cog):
     @commands.command()
     async def leave(self, ctx):
         voice_client = ctx.voice_client
-        if voice_client:
+        if ctx.voice_client:
             await ctx.send("Dagon has been banished!")
             await voice_client.disconnect()
 
@@ -58,9 +58,7 @@ class Music(commands.Cog):
 
         if voice_client and voice_client.is_playing():
             voice_client.pause()
-            await ctx.send(
-                "Playback paused. Use !resume to continue or !play to play next track."
-            )
+            await ctx.send("Playback paused.")
         else:
             await ctx.send("Dagon is not currently playing any music.")
 
