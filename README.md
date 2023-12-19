@@ -14,6 +14,7 @@ Dagon Bot offers the following music-related commands:
 - `!play <youtube-link>` - Starts playing the song from Youtube link.
 - `!pause` - Pauses the playback of the current song.
 - `!resume` - Resumes playback of a paused song.
+- `!stop` - Stops playback.
 - `!vol <volume-level>` - Sets the volume level (0-100).
 - `!join` - Summons the bot to join the voice channel you are in.
 - `!leave` - Commands the bot to leave the current voice channel.

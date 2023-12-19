@@ -75,16 +75,14 @@ class Music(commands.Cog):
     @play.before_invoke
     @join.before_invoke
     async def ensure_voice(self, ctx):
-        current_bot_channel = ctx.voice_client
-        if current_bot_channel and current_bot_channel != ctx.author.voice:
-            await current_bot_channel.disconnect()
-
-        if ctx.author.voice:
-            await ctx.author.voice.channel.connect()
-            await ctx.send("Dagon has been summoned!")
-        else:
+        if not ctx.author.voice:
             await ctx.send("You must be in a voice channel to summon Dagon.")
             raise commands.CommandError("Author not connected to a voice channel.")
+        current_bot_channel = ctx.voice_client
+        if current_bot_channel != ctx.author.voice:
+            await current_bot_channel.disconnect()
+            await ctx.author.voice.channel.connect()
+            await ctx.send("Dagon has been summoned!")
 
 
 async def setup_music(bot):
