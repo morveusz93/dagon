@@ -51,7 +51,7 @@ class Music(commands.Cog):
         if voice_client:
             voice_client.stop()
             await ctx.send("Playback stopped.")
-    
+
     @commands.command()
     async def pause(self, ctx):
         voice_client = ctx.voice_client
@@ -80,8 +80,10 @@ class Music(commands.Cog):
             await current_bot_channel.disconnect()
 
         if ctx.author.voice:
+            if ctx.author.voice != current_bot_channel:
+                await ctx.send("Dagon has been summoned!")
             await ctx.author.voice.channel.connect()
-            await ctx.send("Dagon has been summoned!")
+
         else:
             await ctx.send("You must be in a voice channel to summon Dagon.")
             raise commands.CommandError("Author not connected to a voice channel.")
