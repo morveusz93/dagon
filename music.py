@@ -9,7 +9,14 @@ class Music(commands.Cog):
 
     @commands.command()
     async def join(self, ctx):
-        pass
+        if ctx.voice_client:
+            if ctx.voice_client.channel == ctx.author.voice.channel:
+                text = "Dagon is already in this channel, fool!"
+            else:
+                text = "Someone else has already summoned Dagon to another channel."
+            return await ctx.send(text)
+        await ctx.send("Dagon has been summoned!")
+        await ctx.author.voice.channel.connect()
 
     @commands.command()
     async def leave(self, ctx):
@@ -20,6 +27,8 @@ class Music(commands.Cog):
 
     @commands.command()
     async def play(self, ctx, *, url):
+        if not ctx.voice_client:
+            await ctx.invoke(self.bot.get_command('join'))
         async with ctx.typing():
             player = await YTDLSource.from_url(url, loop=self.bot.loop)
 
@@ -74,15 +83,7 @@ class Music(commands.Cog):
     @play.before_invoke
     @join.before_invoke
     async def ensure_voice(self, ctx):
-        current_bot_channel = ctx.voice_client
-        if current_bot_channel and current_bot_channel != ctx.author.voice:
-            await current_bot_channel.disconnect()
-
-        if ctx.author.voice:
-            if ctx.author.voice != current_bot_channel:
-                await ctx.send("Dagon has been summoned!")
-            await ctx.author.voice.channel.connect()
-        else:
+        if not ctx.author.voice:
             await ctx.send("You must be in a voice channel to summon Dagon.")
             raise commands.CommandError("Author not connected to a voice channel.")
 
