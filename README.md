@@ -1,9 +1,7 @@
 # TODO
-
-- Pauzowanie i wznawianie utworu
+- odtwarzanie cąłej playlisty
 - Pauzowanie i wznawianie utworu w playliście
-- Stopowanie całej playlisty bez wcyodzenia bota
+- Stopowanie całej playlisty bez wychodzenia bota
 - Przejście do kolejnego utworu w playliście
-- Wyszukiwanie muzyki - !search <tytuł>
 - Dokeryzacja
 - Deployment
