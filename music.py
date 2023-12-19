@@ -80,10 +80,10 @@ class Music(commands.Cog):
 
         current_bot_channel = ctx.voice_client
         if current_bot_channel and current_bot_channel != ctx.author.voice:
-            if ctx.author.voice != current_bot_channel:
-                await ctx.send("Dagon has been summoned!")
             await current_bot_channel.disconnect()
 
+        if ctx.author.voice != current_bot_channel:
+            await ctx.send("Dagon has been summoned!")
         await ctx.author.voice.channel.connect()
 
 
