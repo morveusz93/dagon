@@ -32,7 +32,7 @@ class Music(commands.Cog):
         brief="Make Dagon play music from YouTube",
         description='Use "play <link>" to play music from a specific link or "play <title-of-song>" to search and play a song from YouTube. If Dagon is not in your voice channel, it will be summoned. If Dagon is already summoned in another voice channel, you cannot summon it.',
     )
-    async def play(self, ctx, *, url):
+    async def play(self, ctx, *, url: str):
         if not ctx.voice_client:
             await ctx.invoke(self.bot.get_command("join"))
         async with ctx.typing():
