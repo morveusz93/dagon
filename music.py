@@ -7,7 +7,10 @@ class Music(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command()
+    @commands.command(
+        brief="Summon Dagon to your voice channel.",
+        description="Dagon cannot be summoned to a channel if it has already been summoned to another voice channel.",
+    )
     async def join(self, ctx):
         if ctx.voice_client:
             if ctx.voice_client.channel == ctx.author.voice.channel:
@@ -18,17 +21,20 @@ class Music(commands.Cog):
         await ctx.send("Dagon has been summoned!")
         await ctx.author.voice.channel.connect()
 
-    @commands.command()
+    @commands.command(brief="Banish Dagon from your voice channel.")
     async def leave(self, ctx):
         voice_client = ctx.voice_client
         if ctx.voice_client:
             await ctx.send("Dagon has been banished!")
             await voice_client.disconnect()
 
-    @commands.command()
+    @commands.command(
+        brief="Make Dagon play music from YouTube",
+        description='Use "play <link>" to play music from a specific link or "play <title-of-song>" to search and play a song from YouTube. If Dagon is not in your voice channel, it will be summoned. If Dagon is already summoned in another voice channel, you cannot summon it.',
+    )
     async def play(self, ctx, *, url):
         if not ctx.voice_client:
-            await ctx.invoke(self.bot.get_command('join'))
+            await ctx.invoke(self.bot.get_command("join"))
         async with ctx.typing():
             player = await YTDLSource.from_url(url, loop=self.bot.loop)
 
@@ -42,7 +48,7 @@ class Music(commands.Cog):
 
         await ctx.send(f"Now playing: {player.title}")
 
-    @commands.command()
+    @commands.command(brief="Change Dagon volume. Range (0-100).")
     async def vol(self, ctx, volume: int):
         if ctx.voice_client is None:
             return await ctx.send("You must be in a voice channel to talk to Dagon.")
@@ -52,7 +58,7 @@ class Music(commands.Cog):
         ctx.voice_client.source.volume = volume / 100
         await ctx.send(f"Changed volume to {volume}%")
 
-    @commands.command()
+    @commands.command(brief="Stop the current song being played by Dagon.")
     async def stop(self, ctx):
         voice_client = ctx.voice_client
 
@@ -60,7 +66,7 @@ class Music(commands.Cog):
             voice_client.stop()
             await ctx.send("Playback stopped.")
 
-    @commands.command()
+    @commands.command(brief="Pause the current song being played by Dagon.")
     async def pause(self, ctx):
         voice_client = ctx.voice_client
 
@@ -70,7 +76,7 @@ class Music(commands.Cog):
         else:
             await ctx.send("Dagon is not currently playing any music.")
 
-    @commands.command()
+    @commands.command(brief="Resume the paused song being played by Dagon.")
     async def resume(self, ctx):
         voice_client = ctx.voice_client
 

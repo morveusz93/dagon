@@ -10,14 +10,14 @@ To add Dagon Bot to your Discord server, use [this link](https://discord.com/api
 
 Dagon Bot offers the following music-related commands:
 
-- `!play <song-name>` - Search and play a song from Youtube.
-- `!play <youtube-link>` - Starts playing the song from Youtube link.
-- `!pause` - Pauses the playback of the current song.
-- `!resume` - Resumes playback of a paused song.
-- `!stop` - Stops playback.
-- `!vol <volume-level>` - Sets the volume level (0-100).
-- `!join` - Summons the bot to join the voice channel you are in.
-- `!leave` - Commands the bot to leave the current voice channel.
+- `!dplay <song-name>` - Search and play a song from Youtube.
+- `!dplay <youtube-link>` - Starts playing the song from Youtube link.
+- `!dpause` - Pauses the playback of the current song.
+- `!dresume` - Resumes playback of a paused song.
+- `!dstop` - Stops playback.
+- `!dvol <volume-level>` - Sets the volume level (0-100).
+- `!djoin` - Summons the bot to join the voice channel you are in.
+- `!dleave` - Commands the bot to leave the current voice channel.
 
 ## Auto-Leave Feature
 
@@ -26,7 +26,7 @@ Dagon Bot includes an auto-leave feature for your convenience. If the bot is the
 ## How to Use the Bot?
 
 1. Add the bot to your server using the invite link.
-2. Type `!play <song-name></song-name>` or `!play <yt-link>` to start playing music.
+2. Type `!dplay <song-name></song-name>` or `!dplay <yt-link>` to start playing music.
 
 ## Requirements
 
