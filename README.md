@@ -19,7 +19,9 @@ Dagon Bot offers the following music-related commands:
 - `!djoin` - Summons the bot to join the voice channel you are in.
 - `!dleave` - Commands the bot to leave the current voice channel.
 
-- `!dmotivate` - Dagon will send you a motivational image
+- `!dmotivate` - Dagon will send you a motivational image.
+- `!dcat` - Dagon will send you a random cat image.
+- `!ddog` - Dagon will send you a random dog image.
 
 ## Auto-Leave Feature
 
