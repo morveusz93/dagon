@@ -10,7 +10,7 @@ class Others(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(brief="Hey, kid! Do you want some motivation?")
+    @commands.command(brief="Hey, kid, want some motivation?")
     async def motivate(self, ctx):
         url = "https://inspirobot.me/api?generate=true"
         resp = requests.get(url)
