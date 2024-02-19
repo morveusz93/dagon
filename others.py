@@ -1,14 +1,14 @@
 import io
-from discord.ext import commands
+
+import aiohttp
 import discord
 import requests
-import aiohttp
+from discord.ext import commands
 
 
 class Others(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-
 
     @commands.command(brief="Hey, kid! Do you want some motivation?")
     async def motivate(self, ctx):
