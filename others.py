@@ -61,6 +61,15 @@ class Others(commands.Cog):
             return await ctx.send(error_msg)
         rolls = roll_dices(number_of_dices, dice)
         return await ctx.send(rolls)
+    
+    
+    @commands.command(brief="Get new name.")
+    async def name(self, ctx):
+        url = 'https://chartopia.d12dev.com/api/charts/19/roll/'
+        resp = requests.post(url)
+        name = resp.json()['results'][0]
+        author = ctx.author
+        await ctx.send(f"From this day forward {author.mention} will be known as **{name.capitalize()}**")
 
 
 async def setup_others(bot):
