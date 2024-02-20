@@ -60,7 +60,7 @@ class Others(commands.Cog):
         except ValueError:
             return await ctx.send(error_msg)
         rolls = roll_dices(number_of_dices, dice)
-        return await ctx.send(rolls)
+        return await ctx.send(f"{ctx.author.mention}: {rolls}")
     
     
     @commands.command(brief="Get new name.")
