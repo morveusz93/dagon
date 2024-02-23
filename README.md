@@ -22,8 +22,11 @@ Dagon Bot offers the following music-related commands:
 - `!dmotivate` - Dagon will send you a motivational image.
 - `!dcat` - Dagon will send you a random cat image.
 - `!ddog` - Dagon will send you a random dog image.
+- `!dduck` - Dagon will send you a random duck image.
+- `!dfox` - Dagon will send you a random fox image.
+- `!dpic <prompt>` - Dagon will send you a random image of anything.
 - `!droll` - Dagon will roll dices for You. You should tell him how many dices you want to roll and whats the dice, eg 2d20
-- `!dname` - Dagon will get you a new name. 
+- `!dname` - Dagon will get you a new name.
 
 ## Auto-Leave Feature
 
