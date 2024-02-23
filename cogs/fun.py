@@ -38,20 +38,17 @@ class Fun(commands.Cog):
         resp = requests.get(DOGS_API_URL)
         img_url = resp.json()[0]["url"]
         await send_picture(img_url, ctx)
-        await send_picture(img_url, ctx)
 
     @commands.command(brief="Kwa Kwa mother fucker!")
     async def duck(self, ctx):
         resp = requests.get(DUCK_API_URL)
         img_url = resp.json()["url"]
         await send_picture(img_url, ctx)
-        await send_picture(img_url, ctx)
 
     @commands.command(brief="Cool fox!")
     async def fox(self, ctx):
         resp = requests.get(FOX_API_URL)
         img_url = resp.json()["image"]
-        await send_picture(img_url, ctx)
         await send_picture(img_url, ctx)
 
     @commands.command(brief="Random picture of anything you type.")
