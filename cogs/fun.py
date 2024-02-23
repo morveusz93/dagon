@@ -53,7 +53,7 @@ class Fun(commands.Cog):
 
     @commands.command(brief="Random picture of anything you type.")
     async def pic(self, ctx, *args):
-        img_url = UNSPLASH_URL + "-".join(args)
+        img_url = UNSPLASH_URL + ",".join(args)
         await send_picture(img_url, ctx)
 
 
