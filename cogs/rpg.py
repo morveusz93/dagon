@@ -60,14 +60,11 @@ class Rpg(commands.Cog):
             f"From this day forward {author.mention} will be known as **{name.capitalize()}**"
         )
 
-    @commands.command(brief="Get new name.")
+    @commands.command(brief="Get new name.", description="Avaiable categories: Guild, Magic, Tavern, Inn, Shop, Town, City, Country, Kingdom, Lake, Mountain, Forest, Island, Continent, World, Planet")
     async def placenames(
         self,
         ctx,
-        cat: str = commands.parameter(
-            default="",
-            description="Avaiable categories: Guild, Magic, Tavern, Inn, Shop, Town, City, Country, Kingdom, Lake, Mountain, Forest, Island, Continent, World, Planet",
-        ),
+        cat: str = "",
     ):
         cat = cat.capitalize()
         if cat not in PLACENAMES_CATEGORIES:
