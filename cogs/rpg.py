@@ -3,6 +3,34 @@ import random
 import requests
 from discord.ext import commands
 
+NAME_API_URL = "https://chartopia.d12dev.com/api/charts/19/roll/"
+PLACENAME_API_URL = (
+    "https://codexnomina.com/wp-admin/admin-ajax.php?action=return_generate"
+)
+PLACENAME_HEADERS = {
+    "Cache-Control": "no-cache",
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
+}
+PLACENAMES_CATEGORIES = [
+    "",
+    "Guild",
+    "Magic",
+    "Tavern",
+    "Inn",
+    "Shop",
+    "Town",
+    "City",
+    "Country",
+    "Kingdom",
+    "Lake",
+    "Mountain",
+    "Forest",
+    "Island",
+    "Continent",
+    "World",
+    "Planet",
+]
+
 
 class Rpg(commands.Cog):
     def __init__(self, bot):
@@ -22,30 +50,45 @@ class Rpg(commands.Cog):
             return await ctx.send(error_msg)
         rolls = roll_dices(number_of_dices, dice)
         return await ctx.send(f"{ctx.author.mention}: {rolls}")
-    
-    
+
     @commands.command(brief="Get new name.")
     async def name(self, ctx):
-        url = 'https://chartopia.d12dev.com/api/charts/19/roll/'
-        resp = requests.post(url)
-        name = resp.json()['results'][0]
+        resp = requests.post(NAME_API_URL)
+        name = resp.json()["results"][0]
         author = ctx.author
-        await ctx.send(f"From this day forward {author.mention} will be known as **{name.capitalize()}**")
-    
-    
+        await ctx.send(
+            f"From this day forward {author.mention} will be known as **{name.capitalize()}**"
+        )
+
     @commands.command(brief="Get new name.")
-    async def placenames(self, ctx):
-        url ="https://codexnomina.com/wp-admin/admin-ajax.php?action=return_generate"
-        headers = {
-            "Cache-Control": "no-cache",
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
-            }
+    async def placenames(
+        self,
+        ctx,
+        cat: str = commands.parameter(
+            default="",
+            description="Avaiable categories: Guild, Magic, Tavern, Inn, Shop, Town, City, Country, Kingdom, Lake, Mountain, Forest, Island, Continent, World, Planet",
+        ),
+    ):
+        cat = cat.capitalize()
+        if cat not in PLACENAMES_CATEGORIES:
+            await ctx.send(
+                f"Sorry {ctx.author.mention}, I don't recognize this category. I will search in all categories."
+            )
+            cat = ""
+
         data = {
             "post_id": "2307",
-            "filter_1": "",
+            "filter_1": cat,
         }
-        response = requests.post(url, headers=headers, data=data)
-        names = response.content.decode('utf-8').replace("<p>", "").replace("</p>", ", ").split(",")
+        response = requests.post(
+            PLACENAME_API_URL, headers=PLACENAME_HEADERS, data=data
+        )
+        names = (
+            response.content.decode("utf-8")
+            .replace("<p>", "")
+            .replace("</p>", ", ")
+            .split(",")
+        )
         result = "\n".join(["**" + n.strip() + "**" for n in names if n != " "])
         await ctx.send(f"Your order, {ctx.author.mention}: \n{result}")
 

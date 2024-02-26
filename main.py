@@ -1,10 +1,10 @@
 import asyncio
 import os
 
-from dagon import Dagon
+from cogs.fun import setup_fun
 from cogs.music import setup_music
 from cogs.rpg import setup_rpg
-from cogs.fun import setup_fun
+from dagon import Dagon
 
 TOKEN = os.getenv("DISCORD_TOKEN")
 

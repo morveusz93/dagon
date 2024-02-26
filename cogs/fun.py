@@ -6,7 +6,6 @@ import discord
 import requests
 from discord.ext import commands
 
-
 MOTIVATE_API_URL = "https://inspirobot.me/api?generate=true"
 CATS_API_URL = "https://api.thecatapi.com/v1/images/search?limit=1"
 DOGS_API_URL = "https://api.thedogapi.com/v1/images/search?limit=1"
@@ -63,7 +62,10 @@ async def send_picture(img_url, ctx):
         async with session.get(img_url) as resp:
             img = await resp.read()
             with io.BytesIO(img) as file:
-                await ctx.send(f"Your order, {ctx.author.mention}:", file=discord.File(file, "yourpic.png"))
+                await ctx.send(
+                    f"Your order, {ctx.author.mention}:",
+                    file=discord.File(file, "yourpic.png"),
+                )
 
 
 async def setup_fun(bot):
