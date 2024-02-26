@@ -48,10 +48,6 @@ class Music(commands.Cog):
             ctx.voice_client.source.volume = self.bot.vol / 100
 
         await ctx.send(f"Now playing: {player.title}")
-        if "queen" in ctx.author.name:
-            await ctx.send(f"Nadszedł dzień zapłaty, {ctx.author.mention}! Złóż mi w ofierze jednego z graczy na dziejszej sesji. Pozwól aby moje sługi go pochwyciły a twój dług uznam za uregulowany...")
-            time.sleep(8)
-            await ctx.send(f"...tymczasowo. ☠️")
 
     @commands.command(brief="Change Dagon volume. Range (0-100).")
     async def vol(self, ctx, volume: int):

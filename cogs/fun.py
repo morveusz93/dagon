@@ -64,10 +64,6 @@ async def send_picture(img_url, ctx):
             img = await resp.read()
             with io.BytesIO(img) as file:
                 await ctx.send(f"Your order, {ctx.author.mention}:", file=discord.File(file, "yourpic.png"))
-    if "queen" in ctx.author.name:
-        await ctx.send(f"Nadszedł dzień zapłaty, {ctx.author.mention}! Złóż mi w ofierze jednego z graczy na dziejszej sesji. Pozwól aby moje sługi go pochwyciły a twój dług uznam za uregulowany...")
-        time.sleep(8)
-        await ctx.send(f"...tymczasowo. ☠️")
 
 
 async def setup_fun(bot):
