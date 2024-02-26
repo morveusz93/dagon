@@ -27,6 +27,7 @@ Dagon Bot offers the following music-related commands:
 - `!dpic <prompt>` - Dagon will send you a random image of anything.
 - `!droll` - Dagon will roll dices for You. You should tell him how many dices you want to roll and whats the dice, eg 2d20
 - `!dname` - Dagon will get you a new name.
+- `!dplacenames` - Dagon will get you 10 names for locations.
 
 ## Auto-Leave Feature
 

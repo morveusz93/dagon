@@ -31,6 +31,23 @@ class Rpg(commands.Cog):
         name = resp.json()['results'][0]
         author = ctx.author
         await ctx.send(f"From this day forward {author.mention} will be known as **{name.capitalize()}**")
+    
+    
+    @commands.command(brief="Get new name.")
+    async def placenames(self, ctx):
+        url ="https://codexnomina.com/wp-admin/admin-ajax.php?action=return_generate"
+        headers = {
+            "Cache-Control": "no-cache",
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
+            }
+        data = {
+            "post_id": "2307",
+            "filter_1": "",
+        }
+        response = requests.post(url, headers=headers, data=data)
+        names = response.content.decode('utf-8').replace("<p>", "").replace("</p>", ", ").split(",")
+        result = "\n".join(["**" + n.strip() + "**" for n in names if n != " "])
+        await ctx.send(f"Your order, {ctx.author.mention}: \n{result}")
 
 
 async def setup_rpg(bot):
