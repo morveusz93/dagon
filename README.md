@@ -8,26 +8,7 @@ To add Dagon Bot to your Discord server, use [this link](https://discord.com/api
 
 ## Commands
 
-Dagon Bot offers the following music-related commands:
-
-- `!dplay <song-name>` - Search and play a song from Youtube.
-- `!dplay <youtube-link>` - Starts playing the song from Youtube link.
-- `!dpause` - Pauses the playback of the current song.
-- `!dresume` - Resumes playback of a paused song.
-- `!dstop` - Stops playback.
-- `!dvol <volume-level>` - Sets the volume level (0-100).
-- `!djoin` - Summons the bot to join the voice channel you are in.
-- `!dleave` - Commands the bot to leave the current voice channel.
-
-- `!dmotivate` - Dagon will send you a motivational image.
-- `!dcat` - Dagon will send you a random cat image.
-- `!ddog` - Dagon will send you a random dog image.
-- `!dduck` - Dagon will send you a random duck image.
-- `!dfox` - Dagon will send you a random fox image.
-- `!dpic <prompt>` - Dagon will send you a random image of anything.
-- `!droll` - Dagon will roll dices for You. You should tell him how many dices you want to roll and whats the dice, eg 2d20
-- `!dname` - Dagon will get you a new name.
-- `!dplacenames` - Dagon will get you 10 names for locations.
+To see command use `!dhelp`
 
 ## Auto-Leave Feature
 

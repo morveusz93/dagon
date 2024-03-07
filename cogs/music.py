@@ -1,5 +1,4 @@
-import time
-
+import asyncio
 from discord.ext import commands
 
 from yt import YTDLSource
@@ -8,6 +7,7 @@ from yt import YTDLSource
 class Music(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.queue = []
 
     @commands.command(
         brief="Summon Dagon to your voice channel.",
@@ -31,26 +31,54 @@ class Music(commands.Cog):
             await voice_client.disconnect()
 
     @commands.command(
-        brief="Make Dagon play music from YouTube",
+        brief="Play a song from YouTube. Use 'play loop <link>' to play song in loop.",
         description='Use "play <link>" to play music from a specific link or "play <title-of-song>" to search and play a song from YouTube. If Dagon is not in your voice channel, it will be summoned. If Dagon is already summoned in another voice channel, you cannot summon it.',
     )
-    async def play(self, ctx, *, url: str):
+    async def play(self, ctx, *, url: str = ""):
+        if not url and not self.queue:
+            return await ctx.send("You must provide a link or search term.")
+        in_loop = False
+        if url and url.split(" ")[0] == "loop":
+            url = " ".join(url.split(" ")[1:])
+            in_loop = True
         if not ctx.voice_client:
             await ctx.invoke(self.bot.get_command("join"))
-        async with ctx.typing():
-            player = await YTDLSource.from_url(url, loop=self.bot.loop)
+        if url:
+            self.queue.insert(0, url)
+        while self.queue:
+            while ctx.voice_client.is_playing() or ctx.voice_client.is_paused():
+                await asyncio.sleep(2)
+                pass
+            try:
+                async with ctx.typing():
+                    player = await YTDLSource.from_url(self.queue.pop(0), loop=self.bot.loop)
+                    ctx.voice_client.play(player, after=lambda e: print(f'Player error: {e}') if e else None)
+                    ctx.voice_client.source.volume = self.bot.vol / 100
+                await ctx.send(f'**Now playing:** {player.title}')
+                if in_loop:
+                    self.queue.insert(0, url)
+            except:
+                break
 
-            if ctx.voice_client.is_playing() or ctx.voice_client.is_paused():
-                ctx.voice_client.stop()
+    @commands.command(brief="Add a song to the queue.")
+    async def queue(self, ctx, *, url: str):
+        self.queue.append(url)
+        await ctx.send(f"Added to queue: {url}")
 
-            ctx.voice_client.play(
-                player, after=lambda e: print(f"Player error: {e}") if e else None
-            )
-            ctx.voice_client.source.volume = self.bot.vol / 100
+    @commands.command(brief="Print the current queue.")
+    async def printqueue(self, ctx):
+        if not self.queue:
+            return await ctx.send("The queue is empty.")    
+        await ctx.send("Current queue:")
+        for i, song in enumerate(self.queue):
+            await ctx.send(f"{i+1}. {song}") 
 
-        await ctx.send(f"Now playing: {player.title}")
+    @commands.command(brief="Clear the queue.")
+    async def clearqueue(self, ctx):
+        self.queue = []
+        await ctx.send("Queue has been cleared.")
 
-    @commands.command(brief="Change Dagon volume. Range (0-100).")
+    @commands.command(brief="Change volume. Range (0-100).")
     async def vol(self, ctx, volume: int):
         if ctx.voice_client is None:
             return await ctx.send("You must be in a voice channel to talk to Dagon.")
@@ -60,15 +88,16 @@ class Music(commands.Cog):
         ctx.voice_client.source.volume = volume / 100
         await ctx.send(f"Changed volume to {volume}%")
 
-    @commands.command(brief="Stop the current song being played by Dagon.")
+    @commands.command(brief="Stop the current song.")
     async def stop(self, ctx):
         voice_client = ctx.voice_client
 
         if voice_client:
             voice_client.stop()
-            await ctx.send("Playback stopped.")
+            self.queue = []
+            await ctx.send("Playback stopped and queue is cleared.")
 
-    @commands.command(brief="Pause the current song being played by Dagon.")
+    @commands.command(brief="Pause the current song.")
     async def pause(self, ctx):
         voice_client = ctx.voice_client
 
@@ -78,7 +107,7 @@ class Music(commands.Cog):
         else:
             await ctx.send("Dagon is not currently playing any music.")
 
-    @commands.command(brief="Resume the paused song being played by Dagon.")
+    @commands.command(brief="Resume the paused song.")
     async def resume(self, ctx):
         voice_client = ctx.voice_client
 
