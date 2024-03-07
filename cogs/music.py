@@ -29,6 +29,7 @@ class Music(commands.Cog):
         if ctx.voice_client:
             await ctx.send("Dagon has been banished!")
             await voice_client.disconnect()
+            self.queue = []
 
     @commands.command(
         brief="Play a song from YouTube. Use 'play loop <link>' to play song in loop.",
