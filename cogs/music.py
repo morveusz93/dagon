@@ -55,7 +55,7 @@ class Music(commands.Cog):
                     entries = await YTDLSource.get_audio_entries(self.queue.pop(0), loop=self.bot.loop)
                     audio = entries.pop(0)
                     if entries:
-                        to_queue = [entry["original_url"] for entry in entries]
+                        to_queue = [entry["title"] for entry in entries]
                         self.queue = to_queue + self.queue
                     player = await YTDLSource.from_url(data=audio)
                     ctx.voice_client.play(player, after=lambda e: print(f'Player error: {e}') if e else None)
