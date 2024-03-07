@@ -23,3 +23,4 @@ class Dagon(commands.Bot):
         voice_client = discord.utils.get(self.voice_clients, guild=member.guild)
         if voice_client and len(voice_client.channel.members) == 1:
             await voice_client.disconnect()
+            self._BotBase__cogs['Music'].queue = []
