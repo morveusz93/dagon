@@ -16,7 +16,7 @@ class Music(commands.Cog):
     async def join(self, ctx):
         if ctx.voice_client:
             if ctx.voice_client.channel == ctx.author.voice.channel:
-                text = "Dagon is already in this channel, fool!"
+                text = "Dagon is already here!"
             else:
                 text = "Someone else has already summoned Dagon to another channel."
             return await ctx.send(text)
@@ -46,10 +46,9 @@ class Music(commands.Cog):
             await ctx.invoke(self.bot.get_command("join"))
         if url:
             self.queue.insert(0, url)
+        if ctx.voice_client.is_playing() or ctx.voice_client.is_paused():
+            ctx.voice_client.stop()
         while self.queue:
-            while ctx.voice_client.is_playing() or ctx.voice_client.is_paused():
-                await asyncio.sleep(2)
-                pass
             try:
                 async with ctx.typing():
                     entries = await YTDLSource.get_audio_entries(self.queue.pop(0), loop=self.bot.loop)
@@ -77,7 +76,7 @@ class Music(commands.Cog):
             return await ctx.send("The queue is empty.")    
         await ctx.send("Current queue:")
         for i, song in enumerate(self.queue):
-            await ctx.send(f"{i+1}. {song}") 
+            await ctx.send(f"{i+1}. {song}")
 
     @commands.command(brief="Clear the queue.")
     async def clearqueue(self, ctx):
