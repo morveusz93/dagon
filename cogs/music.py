@@ -1,5 +1,3 @@
-import time
-from discord import ClientException
 from discord.ext import commands
 from discord.ext.commands.context import Context
 from yt_dlp.utils import DownloadError
@@ -43,9 +41,11 @@ class Music(commands.Cog):
             if ctx.voice_client.is_playing() or ctx.voice_client.is_paused():
                 return
             player = await YTDLSource.from_url(self.music_queue.get())
-            ctx.voice_client.play(player, after=lambda e: self.bot.loop.create_task(self.play_next(ctx)))
+            ctx.voice_client.play(
+                player, after=lambda e: self.bot.loop.create_task(self.play_next(ctx))
+            )
             ctx.voice_client.source.volume = self.bot.vol / 100
-            await ctx.send(f'**Now playing:** {player.title}')
+            await ctx.send(f"**Now playing:** {player.title}")
             if not self.is_looping:
                 self.music_queue.remove_first()
         except Exception as e:
@@ -55,7 +55,7 @@ class Music(commands.Cog):
     @commands.command(
         brief="Play a song from YouTube.",
         description='Use "play <link>" to play music from a specific link or "play <title-of-song>" to search and play a song from YouTube.',
-        aliases=['p'],
+        aliases=["p"],
     )
     async def play(self, ctx, *, url: str = ""):
         if not url and self.music_queue.is_empty():
@@ -67,7 +67,7 @@ class Music(commands.Cog):
             await self._prepare_queue(url, ctx)
         await self.play_next(ctx)
 
-    async def _prepare_queue(self, url:str, ctx: Context):
+    async def _prepare_queue(self, url: str, ctx: Context):
         await ctx.send(f"Getting music from youtube...")
         try:
             entries = await YTDLSource.get_audio_entries(url, loop=self.bot.loop)
@@ -80,7 +80,7 @@ class Music(commands.Cog):
     @commands.command(
         brief="Loop the current or next song.",
         description="Enables looping of the currently playing or the next song if nothing is playing.",
-        aliases=['l']
+        aliases=["l"],
     )
     async def loop(self, ctx):
         if self.is_looping:
@@ -95,7 +95,7 @@ class Music(commands.Cog):
     @commands.command(
         brief="Stop looping the song.",
         description="Disables the looping of the current song.",
-        aliases=["sl"]
+        aliases=["sl"],
     )
     async def stoploop(self, ctx):
         if self.is_looping:
@@ -104,18 +104,18 @@ class Music(commands.Cog):
             return await ctx.send(f"Stopped looping: {looped_song.title}.")
         return await ctx.send("There is no looping set.")
 
-    @commands.command(brief="Add a song to the queue.", aliases=['q'])
+    @commands.command(brief="Add a song to the queue.", aliases=["q"])
     async def queue(self, ctx: Context, *, url: str):
         try:
             await self._prepare_queue(url, ctx)
         except Exception as e:
             print(e)
 
-    @commands.command(brief="Print the current queue.", aliases=['pq'])
+    @commands.command(brief="Print the current queue.", aliases=["pq"])
     async def printqueue(self, ctx: Context):
         try:
             if self.music_queue.is_empty():
-                return await ctx.send("The queue is empty.")    
+                return await ctx.send("The queue is empty.")
             await ctx.send("Current queue:")
             queue = self.music_queue.get_all()
             for i, song in enumerate(queue):
@@ -123,17 +123,17 @@ class Music(commands.Cog):
         except Exception as e:
             print(e)
 
-    @commands.command(brief="Clear the queue.", aliases=['cq'])
+    @commands.command(brief="Clear the queue.", aliases=["cq"])
     async def clearqueue(self, ctx: Context):
         self.music_queue.clear()
         await ctx.send("Queue has been cleared.")
 
-    @commands.command(brief="Print the history.", aliases=['ph'])
+    @commands.command(brief="Print the history.", aliases=["ph"])
     async def printhistory(self, ctx: Context):
         try:
             history = self.music_queue.get_history()
             if not history:
-                return await ctx.send("The history is empty.")    
+                return await ctx.send("The history is empty.")
             await ctx.send("History of songs:")
             for i, song in enumerate(history):
                 await ctx.send(f"{i+1}. {song.title}")
@@ -158,7 +158,9 @@ class Music(commands.Cog):
             voice_client.stop()
             await ctx.send("Playback stopped.")
 
-    @commands.command(brief="Stop the current song and clear the queue.", aliases=["sa"])
+    @commands.command(
+        brief="Stop the current song and clear the queue.", aliases=["sa"]
+    )
     async def stopall(self, ctx: Context):
         voice_client = ctx.voice_client
         if voice_client:

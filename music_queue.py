@@ -1,5 +1,3 @@
-
-
 from yt import YoutubeAudio
 
 
@@ -14,10 +12,10 @@ class MusicQueue:
     def get(self):
         if not self.is_empty():
             return self._queue[0]
-        
+
     def get_all(self):
         return self._queue
-    
+
     def clear(self):
         self._queue = []
 
@@ -26,7 +24,7 @@ class MusicQueue:
 
     def is_empty(self):
         return len(self._queue) == 0
-    
+
     def remove_first(self):
         song = self._queue.pop(0)
         self._history.insert(0, song)

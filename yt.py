@@ -1,10 +1,10 @@
 import asyncio
+from dataclasses import dataclass
 
 import discord
 import yt_dlp as youtube_dl
 
 from config import ffmpeg_options, ytdl_format_options
-from dataclasses import dataclass
 
 
 @dataclass
@@ -20,8 +20,9 @@ def from_dict(data: dict) -> YoutubeAudio:
         title=data.get("title", ""),
         url=data.get("url", ""),
         original_url=data.get("original_url", ""),
-        data=data
+        data=data,
     )
+
 
 youtube_dl.utils.bug_reports_message = lambda: ""
 ytdl = youtube_dl.YoutubeDL(ytdl_format_options)
