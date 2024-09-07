@@ -37,10 +37,10 @@ class Rpg(commands.Cog):
         self.bot = bot
 
     @commands.command(
-        brief="Roll a dice[s]. Type '!droll 2k10' or '!droll 1d100'. Max number of dices is 100, biggest dice is 100 also."
+        brief="Poproś Dagona o rzut kośćmi. Dagon posiada po 100 kości od tych z jednym oczkiem do tych ze 100 oczkami. Podaj liczbę kości i ich rodzaj, np 1d10"
     )
     async def roll(self, ctx, dices: str):
-        error_msg = "Wrong command. Type <number_of_dices>K<dice_type>, eg 2k10."
+        error_msg = "Błędna komenda. Podaj liczbę kości i ich rodzaj, np 1d10"
         cmd = get_command_from_dices(dices)
         if not cmd or len(cmd) > 2:
             return await ctx.send(error_msg)
@@ -51,18 +51,18 @@ class Rpg(commands.Cog):
         rolls = roll_dices(number_of_dices, dice)
         return await ctx.send(f"{ctx.author.mention}: {rolls}")
 
-    @commands.command(brief="Get new name.")
+    @commands.command(brief="Dagon pomoże wymyśleć Ci nowe imię.")
     async def name(self, ctx):
         resp = requests.post(NAME_API_URL)
         name = resp.json()["results"][0]
         author = ctx.author
         await ctx.send(
-            f"From this day forward {author.mention} will be known as **{name.capitalize()}**"
+            f"Od dziś, {author.mention} będzie znana / znany jako: **{name.capitalize()}**"
         )
 
     @commands.command(
-        brief="Get new name.",
-        description="Avaiable categories: Guild, Magic, Tavern, Inn, Shop, Town, City, Country, Kingdom, Lake, Mountain, Forest, Island, Continent, World, Planet",
+        brief="Poproś Dagona o wymyślenie nazwy dla miasta, gildii, kontynenty czy... czegokolwiek.",
+        description="Dostępne kategorie: Guild, Magic, Tavern, Inn, Shop, Town, City, Country, Kingdom, Lake, Mountain, Forest, Island, Continent, World, Planet",
     )
     async def placenames(
         self,
@@ -72,7 +72,7 @@ class Rpg(commands.Cog):
         cat = cat.capitalize()
         if cat not in PLACENAMES_CATEGORIES:
             await ctx.send(
-                f"Sorry {ctx.author.mention}, I don't recognize this category. I will search in all categories."
+                f"Dagon nie zna tej kategorii, poda Ci nazwy z losowych."
             )
             cat = ""
 
@@ -90,7 +90,7 @@ class Rpg(commands.Cog):
             .split(",")
         )
         result = "\n".join(["**" + n.strip() + "**" for n in names if n != " "])
-        await ctx.send(f"Your order, {ctx.author.mention}: \n{result}")
+        await ctx.send(f"Twoje zamówienie, {ctx.author.mention}: \n{result}")
 
 
 async def setup_rpg(bot):

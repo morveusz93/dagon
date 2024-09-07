@@ -10,34 +10,33 @@ class Music(commands.Cog):
         self.bot = bot
 
     @commands.command(
-        brief="Summon Dagon to your voice channel.",
-        description="Dagon cannot be summoned to a channel if it has already been summoned to another voice channel.",
+        brief="Wykonaj rytual przyzywania Dagona.",
     )
     async def join(self, ctx: Context):
         if ctx.voice_client:
             if ctx.voice_client.channel == ctx.author.voice.channel:
-                text = "Dagon is already here!"
+                text = "Dagon już przebywa wśród Was!"
             else:
-                text = "Someone else has already summoned Dagon to another channel."
+                text = "Dagon został przyzwany przez kogoś innego."
             return await ctx.send(text)
-        await ctx.send("Dagon has been summoned!")
+        await ctx.send("Lękajcie się śmiertelnicy, oto nadchodzi Przedwieczny Dagon!")
         await ctx.author.voice.channel.connect()
 
-    @commands.command(brief="Banish Dagon from your voice channel.")
+    @commands.command(brief="Wykonaj rytuał odesłania Dagon do jego wymiaru z nadzieją ze się powiedzie.")
     async def leave(self, ctx: Context):
         voice_client = ctx.voice_client
         if ctx.voice_client:
-            await ctx.send("Dagon has been banished!")
+            await ctx.send("Tym razem udało się odesłać Dagona...")
             await voice_client.disconnect()
 
     @commands.command(
-        brief="Play a song from YouTube.",
-        description='Use "play <link>" to play music from a specific link or "play <title-of-song>" to search and play a song from YouTube.',
+        brief="Zmuś przedwiecznego do odegrania pieśni z Youtube.",
+        description='Uzyj linku do konkretnego utworu bądź podaj frazę po której Dagon wyszuka utworu na YT.',
         aliases=["p"],
     )
     async def play(self, ctx, *, url: str = ""):
         if not url:
-            return await ctx.send("Nothing to play...")
+            return await ctx.send("Podaj link lub frazę jeżeli nie chcesz rozsłościć Dagona...")
         if not ctx.voice_client:
             await ctx.invoke(self.bot.get_command("join"))
         if ctx.voice_client.is_playing() or ctx.voice_client.is_paused():
@@ -48,49 +47,44 @@ class Music(commands.Cog):
                 player, after=lambda e: self.bot.loop.create_task(self.play_next(ctx))
             )
             ctx.voice_client.source.volume = self.bot.vol / 100
-            await ctx.send(f"**Now playing:** {player.title}")
+            await ctx.send(f"**Dagon zaśpiewa Wam:** {player.title}")
         except DownloadError as e:
-            await ctx.send(f"Youtube Error: {e}")
+            await ctx.send(f"Niech to Cthulhu strzeli, YouTube nie współpracuje : {e}")
         except Exception as e:
             print(f"bład: {e}")
-            await ctx.send(f"Wystąpił nieoczekiwany błąd: {e}")
+            await ctx.send(f"Zadziało się coś nieoczekiwanego: {e}")
 
-    @commands.command(brief="Change volume. Range (0-100).")
+    @commands.command(brief="Ustaw głośność Dagona w przedziale 0-100.")
     async def vol(self, ctx: Context, volume: int):
         if ctx.voice_client is None:
-            return await ctx.send("You must be in a voice channel to talk to Dagon.")
+            return await ctx.send("Żeby to zrobić musisz być na kanale głosowym.")
         if volume > 100 or volume < 0:
-            return await ctx.send("Volume must be in range (0-100).")
+            return await ctx.send("Podaj liczbę w przedziale 0-100.")
         self.bot.vol = volume
+        if ctx.voice_client.source.volume * 100 > volume:
+            text = "Dagon postara się być ciszej"
+        else:
+            text = "Dagon będzie śpiewać głośniej"
         ctx.voice_client.source.volume = volume / 100
-        await ctx.send(f"Changed volume to {volume}%")
+        await ctx.send(text)
 
-    @commands.command(brief="Stop the current song.", aliases=["s"])
+    @commands.command(brief="Poproś Dagona aby skończył już spiewać (ryzykowne).", aliases=["s"])
     async def stop(self, ctx: Context):
         voice_client = ctx.voice_client
 
         if voice_client:
             voice_client.stop()
-            await ctx.send("Playback stopped.")
+            await ctx.send("Tym razem Dagon posłuchał i przestał śpiewać.")
 
-    @commands.command(
-        brief="Stop the current song.", aliases=["sa"]
-    )
-    async def stopall(self, ctx: Context):
-        voice_client = ctx.voice_client
-        if voice_client:
-            voice_client.stop()
-            await ctx.send("Playback stopped.")
-
-    @commands.command(brief="Pause the current song.")
+    @commands.command(brief="Poproś o którką przerwę.")
     async def pause(self, ctx: Context):
         voice_client = ctx.voice_client
 
         if voice_client and voice_client.is_playing():
             voice_client.pause()
-            await ctx.send("Playback paused.")
+            await ctx.send("Dagon zgodził się przerwac na chwilę.")
         else:
-            await ctx.send("Dagon is not currently playing any music.")
+            await ctx.send("Dagon spojrzał na Ciebie zdegustowany. Przecież obecnie nic nie śpiewa.")
 
     @commands.command(brief="Resume the paused song.")
     async def resume(self, ctx: Context):
@@ -98,15 +92,15 @@ class Music(commands.Cog):
 
         if voice_client and voice_client.is_paused():
             voice_client.resume()
-            await ctx.send("Playback resumed.")
+            await ctx.send("Dagon wznawia swój śpiew.")
         else:
-            await ctx.send("Dagon is not currently paused.")
+            await ctx.send("Czujesz na sobie wwieracjące się spojrzenie Dagona - przecież nie ma czego wznawiać.")
 
     @play.before_invoke
     @join.before_invoke
     async def ensure_voice(self, ctx: Context):
         if not ctx.author.voice:
-            await ctx.send("You must be in a voice channel to summon Dagon.")
+            await ctx.send("Musisz znajdować się w kręgu przywołań (kanale głosowym)")
             raise commands.CommandError("Author not connected to a voice channel.")
 
 
