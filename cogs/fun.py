@@ -17,7 +17,7 @@ class Fun(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(brief="Któż motywuje lepiej od Dagona?")
+    @commands.command(brief="Któż motywuje lepiej od Dagona?", aliases=["mot", "m"])
     async def motivate(self, ctx):
         resp = requests.get(MOTIVATE_API_URL)
         img_url = resp.content.decode("utf-8")
@@ -47,11 +47,6 @@ class Fun(commands.Cog):
     async def fox(self, ctx):
         resp = requests.get(FOX_API_URL)
         img_url = resp.json()["image"]
-        await send_picture(img_url, ctx)
-
-    @commands.command(brief="Dagon spróbuje namalować to co sobie zażyczysz.")
-    async def pic(self, ctx, *args):
-        img_url = UNSPLASH_URL + ",".join(args)
         await send_picture(img_url, ctx)
 
 

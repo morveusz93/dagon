@@ -11,6 +11,7 @@ class Music(commands.Cog):
 
     @commands.command(
         brief="Wykonaj rytual przyzywania Dagona.",
+        aliases=["j"]
     )
     async def join(self, ctx: Context):
         if ctx.voice_client:
@@ -22,7 +23,7 @@ class Music(commands.Cog):
         await ctx.send("Lękajcie się śmiertelnicy, oto nadchodzi Przedwieczny Dagon!")
         await ctx.author.voice.channel.connect()
 
-    @commands.command(brief="Wykonaj rytuał odesłania Dagon do jego wymiaru z nadzieją ze się powiedzie.")
+    @commands.command(brief="Wykonaj rytuał odesłania Dagon do jego wymiaru z nadzieją ze się powiedzie.", aliases=["l"])
     async def leave(self, ctx: Context):
         voice_client = ctx.voice_client
         if ctx.voice_client:
@@ -86,7 +87,7 @@ class Music(commands.Cog):
         else:
             await ctx.send("Dagon spojrzał na Ciebie zdegustowany. Przecież obecnie nic nie śpiewa.")
 
-    @commands.command(brief="Resume the paused song.")
+    @commands.command(brief="Resume the paused song.", aliases=["r"])
     async def resume(self, ctx: Context):
         voice_client = ctx.voice_client
 
