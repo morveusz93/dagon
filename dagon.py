@@ -4,7 +4,7 @@ from discord.ext import commands
 
 class Dagon(commands.Bot):
     def __init__(self):
-        command_prefix = "!"
+        command_prefix = "!!"
 
         intents = discord.Intents.default()
         intents.message_content = True
