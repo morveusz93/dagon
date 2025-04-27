@@ -77,7 +77,7 @@ class Music(commands.Cog):
             voice_client.stop()
             await ctx.send("Tym razem Dagon posłuchał i przestał śpiewać.")
 
-    @commands.command(brief="Poproś o którką przerwę.")
+    @commands.command(brief="Poproś o krótką przerwę.")
     async def pause(self, ctx: Context):
         voice_client = ctx.voice_client
 
