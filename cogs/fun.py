@@ -10,7 +10,6 @@ CATS_API_URL = "https://api.thecatapi.com/v1/images/search?limit=1"
 DOGS_API_URL = "https://api.thedogapi.com/v1/images/search?limit=1"
 DUCK_API_URL = "https://random-d.uk/api/v2/random"
 FOX_API_URL = "https://randomfox.ca/floof/"
-UNSPLASH_URL = "https://source.unsplash.com/random/?"
 
 
 class Fun(commands.Cog):
