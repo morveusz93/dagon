@@ -3,34 +3,6 @@ import random
 import requests
 from discord.ext import commands
 
-NAME_API_URL = "https://chartopia.d12dev.com/api/charts/19/roll/"
-PLACENAME_API_URL = (
-    "https://codexnomina.com/wp-admin/admin-ajax.php?action=return_generate"
-)
-PLACENAME_HEADERS = {
-    "Cache-Control": "no-cache",
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
-}
-PLACENAMES_CATEGORIES = [
-    "",
-    "Guild",
-    "Magic",
-    "Tavern",
-    "Inn",
-    "Shop",
-    "Town",
-    "City",
-    "Country",
-    "Kingdom",
-    "Lake",
-    "Mountain",
-    "Forest",
-    "Island",
-    "Continent",
-    "World",
-    "Planet",
-]
-
 
 class Rpg(commands.Cog):
     def __init__(self, bot):
@@ -51,53 +23,12 @@ class Rpg(commands.Cog):
         rolls = roll_dices(number_of_dices, dice)
         return await ctx.send(f"{ctx.author.mention}: {rolls}")
 
-    @commands.command(brief="Dagon pomoże wymyśleć Ci nowe imię.")
-    async def name(self, ctx):
-        resp = requests.post(NAME_API_URL)
-        name = resp.json()["results"][0]
-        author = ctx.author
-        await ctx.send(
-            f"Od dziś, {author.mention} będzie znana / znany jako: **{name.capitalize()}**"
-        )
-
-    @commands.command(
-        brief="Poproś Dagona o wymyślenie nazwy dla miasta, gildii, kontynenty czy... czegokolwiek.",
-        description="Dostępne kategorie: Guild, Magic, Tavern, Inn, Shop, Town, City, Country, Kingdom, Lake, Mountain, Forest, Island, Continent, World, Planet",
-    )
-    async def placenames(
-        self,
-        ctx,
-        cat: str = "",
-    ):
-        cat = cat.capitalize()
-        if cat not in PLACENAMES_CATEGORIES:
-            await ctx.send(
-                f"Dagon nie zna tej kategorii, poda Ci nazwy z losowych."
-            )
-            cat = ""
-
-        data = {
-            "post_id": "2307",
-            "filter_1": cat,
-        }
-        response = requests.post(
-            PLACENAME_API_URL, headers=PLACENAME_HEADERS, data=data
-        )
-        names = (
-            response.content.decode("utf-8")
-            .replace("<p>", "")
-            .replace("</p>", ", ")
-            .split(",")
-        )
-        result = "\n".join(["**" + n.strip() + "**" for n in names if n != " "])
-        await ctx.send(f"Twoje zamówienie, {ctx.author.mention}: \n{result}")
-
 
 async def setup_rpg(bot):
     await bot.add_cog(Rpg(bot))
 
 
-def roll_dices(number_of_dices, dice):
+def roll_dices(number_of_dices: int, dice: int) -> str:
     rolls = [random.randint(1, dice) for _ in range(number_of_dices)]
     result = ""
     for roll in rolls:
@@ -107,6 +38,7 @@ def roll_dices(number_of_dices, dice):
             result += f"**{roll}** "
         else:
             result += f"{roll} "
+    result += f" = {sum(rolls)}"
     return result.strip()
 
 
