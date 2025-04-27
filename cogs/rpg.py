@@ -37,7 +37,8 @@ def roll_dices(number_of_dices: int, dice: int) -> str:
             result += f"**{roll}** "
         else:
             result += f"{roll} "
-    result += f" = {sum(rolls)}"
+    if number_of_dices > 1:
+        result += f" = {sum(rolls)}"
     return result.strip()
 
 
