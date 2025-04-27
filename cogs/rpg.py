@@ -1,6 +1,5 @@
 import random
 
-import requests
 from discord.ext import commands
 
 
@@ -50,7 +49,7 @@ def get_command_from_dices(dices):
         return dices.split("d")
 
 
-def get_dices(cmd):
+def get_dices(cmd: str) -> tuple[int, int]:
     number_of_dices = 1
     dice = int(cmd[-1])
     if cmd[0]:
