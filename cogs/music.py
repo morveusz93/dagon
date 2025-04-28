@@ -4,10 +4,7 @@ import discord
 import wavelink
 from discord.ext import commands
 from discord.ext.commands.context import Context
-from yt_dlp.utils import DownloadError
-
 from dagon import Dagon
-from yt import YTDLSource
 
 
 class Music(commands.Cog):
@@ -52,6 +49,7 @@ class Music(commands.Cog):
             player.autoplay = True
             print(f"Pobrane utwory: {tracks}")
             await player.play(tracks[0])
+            await asyncio.sleep(1)
             await ctx.send(f"Dagon zagra Wam: **{player.current.title}** *({int(player.current.duration // 1000 // 60)}:{int(player.current.duration // 1000 % 60):02})*")
         except Exception as e:
             await ctx.send(f"Niech to Cthulhu kopnie, coś nie współpracuje : \n{e}")
