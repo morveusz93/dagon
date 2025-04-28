@@ -6,25 +6,26 @@ from discord.ext import commands
 from discord.ext.commands.context import Context
 from yt_dlp.utils import DownloadError
 
+from dagon import Dagon
 from yt import YTDLSource
 
 
 class Music(commands.Cog):
-    def __init__(self, bot: commands.Bot):
+    def __init__(self, bot: Dagon):
         self.bot = bot
 
-    @commands.hybrid_command(
-        brief="Wykonaj rytual przyzywania Dagona.",
-    )
-    async def join(self, ctx: Context):
+    @commands.hybrid_command(name="join", brief="Wykonaj rytual przyzywania Dagona.")
+    async def _connect(self, ctx: commands.Context, *, channel: discord.VoiceChannel | None = None):
         if ctx.voice_client:
             if ctx.voice_client.channel == ctx.author.voice.channel:
                 text = "Dagon już przebywa wśród Was!"
             else:
                 text = "Dagon został przyzwany przez kogoś innego."
             return await ctx.send(text)
+        channel = channel or ctx.author.voice.channel
+        player: wavelink.Player = await channel.connect(cls=wavelink.Player)
         await ctx.send("Lękajcie się śmiertelnicy, oto nadchodzi Przedwieczny Dagon!")
-        await ctx.author.voice.channel.connect()
+        return player
 
     @commands.command(brief="Wykonaj rytuał odesłania Dagon do jego wymiaru z nadzieją ze się powiedzie.", aliases=["l"])
     async def leave(self, ctx: Context):
@@ -34,28 +35,27 @@ class Music(commands.Cog):
             await voice_client.disconnect(force=True)
 
     @commands.command(
-        brief="Zmuś przedwiecznego do odegrania pieśni z Youtube.",
+        name="play",
+        brief="Ubłagaj przedwiecznego do odegrania pieśni z Youtube.",
         description='Uzyj linku do konkretnego utworu bądź podaj frazę po której Dagon wyszuka utworu na YT.',
     )
-    async def play(self, ctx, *, url: str = ""):
-        if not url:
+    async def _play(self, ctx, *, query: str = ""):
+        if not query:
             return await ctx.send("Podaj link lub frazę jeżeli nie chcesz rozsłościć Dagona...")
         if not ctx.voice_client:
             await ctx.invoke(self.bot.get_command("join"))
         if ctx.voice_client.is_playing() or ctx.voice_client.is_paused():
-            return
+            return  # TODO: play new song
         try:
-            player = await YTDLSource.from_url(url, loop=self.bot.loop)
-            ctx.voice_client.play(
-                player, after=lambda e: self.bot.loop.create_task(self.play_next(ctx))
-            )
-            ctx.voice_client.source.volume = self.bot.vol / 100
-            await ctx.send(f"**Dagon zaśpiewa Wam:** {player.title}")
-        except DownloadError as e:
-            await ctx.send(f"Niech to Cthulhu strzeli, YouTube nie współpracuje : {e}")
+            tracks: list[wavelink.YouTubeTrack] = await wavelink.YouTubeTrack.search(query)
+            player: wavelink.Player = ctx.voice_client
+            player.autoplay = True
+            print(f"Pobrane utwory: {tracks}")
+            await player.play(tracks[0])
+            await ctx.send(f"Dagon zagra Wam: **{player.current.title}** *({int(player.current.duration // 1000 // 60)}:{int(player.current.duration // 1000 % 60):02})*")
         except Exception as e:
-            print(f"bład: {e}")
-            await ctx.send(f"Zadziało się coś nieoczekiwanego: {e}")
+            await ctx.send(f"Niech to Cthulhu kopnie, coś nie współpracuje : \n{e}")
+            raise e
 
     @commands.command(brief="Ustaw głośność Dagona w przedziale 0-100.")
     async def vol(self, ctx: Context, volume: int):
@@ -99,8 +99,8 @@ class Music(commands.Cog):
         else:
             await ctx.send("Czujesz na sobie wwieracjące się spojrzenie Dagona - przecież nie ma czego wznawiać.")
 
-    @play.before_invoke
-    @join.before_invoke
+    @_play.before_invoke
+    @_connect.before_invoke
     async def ensure_voice(self, ctx: Context):
         if not ctx.author.voice:
             await ctx.send("Musisz znajdować się w kręgu przywołań (kanale głosowym)")

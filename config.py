@@ -1,4 +1,7 @@
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 ytdl_format_options = {
     "format": "bestaudio/best",
