@@ -11,8 +11,9 @@ class Music(commands.Cog):
     def __init__(self, bot: Dagon):
         self.bot = bot
 
-    @commands.hybrid_command(name="join", brief="Wykonaj rytual przyzywania Dagona.")
+    @commands.hybrid_command(name="join", brief="Wykonaj rytuał przyzywania Dagona.")
     async def _connect(self, ctx: commands.Context, *, channel: discord.VoiceChannel | None = None):
+        print("Przyzywanie")
         if ctx.voice_client:
             if ctx.voice_client.channel == ctx.author.voice.channel:
                 text = "Dagon już przebywa wśród Was!"
@@ -20,7 +21,9 @@ class Music(commands.Cog):
                 text = "Dagon został przyzwany przez kogoś innego."
             return await ctx.send(text)
         channel = channel or ctx.author.voice.channel
+        print(f"Channel: {channel}")
         player: wavelink.Player = await channel.connect(cls=wavelink.Player)
+        print(f"Player: {player}")
         await ctx.send("Lękajcie się śmiertelnicy, oto nadchodzi Przedwieczny Dagon!")
         return player
 
