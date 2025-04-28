@@ -20,12 +20,14 @@ class Dagon(commands.Bot):
         self.vol = 50
 
     async def on_ready(self):
-        sc = spotify.SpotifyClient(
-            client_id=SPOTIFY_USER,
-            client_secret=SPOTIFY_PASSWORD
-        )
+        # sc = spotify.SpotifyClient(
+        #     client_id=SPOTIFY_USER,
+        #     client_secret=SPOTIFY_PASSWORD
+        # )
+        # node: wavelink.Node = wavelink.Node(uri=LAVA_URL, password=LAVA_PASSWORD)
+        # await wavelink.NodePool.connect(client=self, nodes=[node], spotify=sc)
         node: wavelink.Node = wavelink.Node(uri=LAVA_URL, password=LAVA_PASSWORD)
-        await wavelink.NodePool.connect(client=self, nodes=[node], spotify=sc)
+        await wavelink.NodePool.connect(client=self, nodes=[node])
         print(f"Logged in as {self.user} (ID: {self.user.id})")
         print("Lavalink connected!")
         print("------")
