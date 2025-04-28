@@ -1,3 +1,7 @@
+import asyncio
+
+import discord
+import wavelink
 from discord.ext import commands
 from discord.ext.commands.context import Context
 from yt_dlp.utils import DownloadError
@@ -9,9 +13,8 @@ class Music(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-    @commands.command(
+    @commands.hybrid_command(
         brief="Wykonaj rytual przyzywania Dagona.",
-        aliases=["j"]
     )
     async def join(self, ctx: Context):
         if ctx.voice_client:
@@ -28,12 +31,11 @@ class Music(commands.Cog):
         voice_client = ctx.voice_client
         if ctx.voice_client:
             await ctx.send("Tym razem udało się odesłać Dagona...")
-            await voice_client.disconnect()
+            await voice_client.disconnect(force=True)
 
     @commands.command(
         brief="Zmuś przedwiecznego do odegrania pieśni z Youtube.",
         description='Uzyj linku do konkretnego utworu bądź podaj frazę po której Dagon wyszuka utworu na YT.',
-        aliases=["p"],
     )
     async def play(self, ctx, *, url: str = ""):
         if not url:
@@ -69,7 +71,7 @@ class Music(commands.Cog):
         ctx.voice_client.source.volume = volume / 100
         await ctx.send(text)
 
-    @commands.command(brief="Poproś Dagona aby skończył już spiewać (ryzykowne).", aliases=["s"])
+    @commands.command(brief="Poproś Dagona aby skończył już spiewać (ryzykowne).")
     async def stop(self, ctx: Context):
         voice_client = ctx.voice_client
 
@@ -87,7 +89,7 @@ class Music(commands.Cog):
         else:
             await ctx.send("Dagon spojrzał na Ciebie zdegustowany. Przecież obecnie nic nie śpiewa.")
 
-    @commands.command(brief="Resume the paused song.", aliases=["r"])
+    @commands.command(brief="Resume the paused song.")
     async def resume(self, ctx: Context):
         voice_client = ctx.voice_client
 
