@@ -44,11 +44,11 @@ class Music(commands.Cog):
             return await ctx.send("Podaj link lub frazę jeżeli nie chcesz rozsłościć Dagona...")
         if not ctx.voice_client:
             await ctx.invoke(self.bot.get_command("join"))
+        player: wavelink.Player = ctx.voice_client
         if ctx.voice_client.is_playing() or ctx.voice_client.is_paused():
-            return  # TODO: play new song
+            await player.stop(force=True)
         try:
             tracks: list[wavelink.YouTubeTrack] = await wavelink.YouTubeTrack.search(query)
-            player: wavelink.Player = ctx.voice_client
             player.autoplay = True
             print(f"Pobrane utwory: {tracks}")
             await player.play(tracks[0])
@@ -81,7 +81,7 @@ class Music(commands.Cog):
         else:
             await ctx.send("Czujesz na sobie mrożący wzrok Dagona - on nic obecnie nie gra.")
 
-    @commands.hybrid_command(name="pause", description="Poproś Dagona o krótką przerwę.")
+    @commands.hybrid_command(name="pause", brief="Poproś Dagona o krótką przerwę.")
     async def _pause(self, ctx):
         player: wavelink.Player = ctx.guild.voice_client
         if player and player.is_playing():
@@ -90,7 +90,7 @@ class Music(commands.Cog):
         else:
             return await ctx.send("Czujesz na sobie mrożący wzrok Dagona - on nic obecnie nie gra.")
 
-    @commands.hybrid_command(name="resume", description="Poproś Dagona o wznowienie.")
+    @commands.hybrid_command(name="resume", brief="Poproś Dagona o wznowienie.")
     async def _resume(self, ctx):
         player: wavelink.Player = ctx.guild.voice_client
         if not player:
