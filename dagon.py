@@ -1,3 +1,5 @@
+import logging
+
 import discord
 import wavelink
 from discord.ext import commands
@@ -12,6 +14,7 @@ class Dagon(commands.Bot):
 
         intents = discord.Intents.default()
         intents.message_content = True
+        discord.utils.setup_logging(level=logging.INFO, root=False)
 
         super().__init__(
             command_prefix=commands.when_mentioned_or(command_prefix), intents=intents
@@ -33,4 +36,7 @@ class Dagon(commands.Bot):
     async def on_voice_state_update(self, member, before, after):
         voice_client = discord.utils.get(self.voice_clients, guild=member.guild)
         if voice_client and len(voice_client.channel.members) == 1:
-            await voice_client.disconnect()
+            await voice_client.disconnect(force=True)
+
+    async def on_wavelink_node_ready(self, node: wavelink.Node):
+        print(f"Node {node.id} is ready!")
