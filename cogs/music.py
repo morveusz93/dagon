@@ -81,25 +81,25 @@ class Music(commands.Cog):
         else:
             await ctx.send("Czujesz na sobie mrożący wzrok Dagona - on nic obecnie nie gra.")
 
-    @commands.command(brief="Poproś o krótką przerwę.")
-    async def pause(self, ctx: Context):
-        voice_client = ctx.voice_client
-
-        if voice_client and voice_client.is_playing():
-            voice_client.pause()
-            await ctx.send("Dagon zgodził się przerwac na chwilę.")
+    @commands.hybrid_command(name="pause", description="Poproś Dagona o krótką przerwę.")
+    async def _pause(self, ctx):
+        player: wavelink.Player = ctx.guild.voice_client
+        if player and player.is_playing():
+            await player.pause()
+            await ctx.send("Dagon zrobi sobie krótką przerwę.")
         else:
-            await ctx.send("Dagon spojrzał na Ciebie zdegustowany. Przecież obecnie nic nie śpiewa.")
+            return await ctx.send("Czujesz na sobie mrożący wzrok Dagona - on nic obecnie nie gra.")
 
-    @commands.command(brief="Resume the paused song.")
-    async def resume(self, ctx: Context):
-        voice_client = ctx.voice_client
-
-        if voice_client and voice_client.is_paused():
-            voice_client.resume()
-            await ctx.send("Dagon wznawia swój śpiew.")
+    @commands.hybrid_command(name="resume", description="Poproś Dagona o wznowienie.")
+    async def _resume(self, ctx):
+        player: wavelink.Player = ctx.guild.voice_client
+        if not player:
+            return await ctx.send("Czujesz na sobie mrożący wzrok Dagona - on nic obecnie nie gra.")
+        elif player.is_paused():
+            await player.resume()
+            await ctx.send(f"Dagon powraca do grania **{player.current.title}** *({int(player.current.duration // 1000 // 60)}:{int(player.current.duration // 1000 % 60):02})*.")
         else:
-            await ctx.send("Czujesz na sobie wwieracjące się spojrzenie Dagona - przecież nie ma czego wznawiać.")
+            return await ctx.send("Czujesz na sobie mrożący wzrok Dagona - on obecnie gra.")
 
     @_play.before_invoke
     @_connect.before_invoke
