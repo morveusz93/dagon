@@ -4,18 +4,16 @@ import discord
 import wavelink
 from discord.ext import commands
 from discord.ext.commands.context import Context
-from yt_dlp.utils import DownloadError
-
 from dagon import Dagon
-from yt import YTDLSource
 
 
 class Music(commands.Cog):
     def __init__(self, bot: Dagon):
         self.bot = bot
 
-    @commands.hybrid_command(name="join", brief="Wykonaj rytual przyzywania Dagona.")
+    @commands.hybrid_command(name="join", brief="Wykonaj rytuał przyzywania Dagona.")
     async def _connect(self, ctx: commands.Context, *, channel: discord.VoiceChannel | None = None):
+        print("Przyzywanie")
         if ctx.voice_client:
             if ctx.voice_client.channel == ctx.author.voice.channel:
                 text = "Dagon już przebywa wśród Was!"
@@ -23,7 +21,9 @@ class Music(commands.Cog):
                 text = "Dagon został przyzwany przez kogoś innego."
             return await ctx.send(text)
         channel = channel or ctx.author.voice.channel
+        print(f"Channel: {channel}")
         player: wavelink.Player = await channel.connect(cls=wavelink.Player)
+        print(f"Player: {player}")
         await ctx.send("Lękajcie się śmiertelnicy, oto nadchodzi Przedwieczny Dagon!")
         return player
 
@@ -52,6 +52,7 @@ class Music(commands.Cog):
             player.autoplay = True
             print(f"Pobrane utwory: {tracks}")
             await player.play(tracks[0])
+            await asyncio.sleep(1)
             await ctx.send(f"Dagon zagra Wam: **{player.current.title}** *({int(player.current.duration // 1000 // 60)}:{int(player.current.duration // 1000 % 60):02})*")
         except Exception as e:
             await ctx.send(f"Niech to Cthulhu kopnie, coś nie współpracuje : \n{e}")
@@ -79,7 +80,7 @@ class Music(commands.Cog):
             voice_client.stop()
             await ctx.send("Tym razem Dagon posłuchał i przestał śpiewać.")
 
-    @commands.command(brief="Poproś o którką przerwę.")
+    @commands.command(brief="Poproś o krótką przerwę.")
     async def pause(self, ctx: Context):
         voice_client = ctx.voice_client
 
