@@ -59,17 +59,17 @@ class Music(commands.Cog):
             raise e
 
     @commands.command(brief="Ustaw głośność Dagona w przedziale 0-100.")
-    async def vol(self, ctx: Context, volume: int):
+    async def vol(self, ctx, volume: int) -> None:
         if ctx.voice_client is None:
             return await ctx.send("Żeby to zrobić musisz być na kanale głosowym.")
         if volume > 100 or volume < 0:
             return await ctx.send("Podaj liczbę w przedziale 0-100.")
-        self.bot.vol = volume
-        if ctx.voice_client.source.volume * 100 > volume:
-            text = "Dagon postara się być ciszej"
+        curr_vol = ctx.voice_client.volume
+        await ctx.voice_client.set_volume(volume)
+        if curr_vol > volume:
+            text = "Dagon postara się być ciszej."
         else:
-            text = "Dagon będzie śpiewać głośniej"
-        ctx.voice_client.source.volume = volume / 100
+            text = "Dagon będzie grać głośniej."
         await ctx.send(text)
 
     @commands.hybrid_command(name="stop", brief="Poproś Dagona aby skończył już grać (ryzykowne).")
