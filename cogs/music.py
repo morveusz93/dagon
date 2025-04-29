@@ -72,13 +72,14 @@ class Music(commands.Cog):
         ctx.voice_client.source.volume = volume / 100
         await ctx.send(text)
 
-    @commands.command(brief="Poproś Dagona aby skończył już spiewać (ryzykowne).")
-    async def stop(self, ctx: Context):
-        voice_client = ctx.voice_client
-
-        if voice_client:
-            voice_client.stop()
-            await ctx.send("Tym razem Dagon posłuchał i przestał śpiewać.")
+    @commands.hybrid_command(name="stop", brief="Poproś Dagona aby skończył już grać (ryzykowne).")
+    async def _stop(self, ctx):
+        player: wavelink.Player = ctx.guild.voice_client
+        if player and player.is_playing():
+            await player.stop(force=True)
+            await ctx.send("Tym razem Dagon posłuchał i przestał grać.")
+        else:
+            await ctx.send("Czujesz na sobie mrożący wzrok Dagona - on nic obecnie nie gra.")
 
     @commands.command(brief="Poproś o krótką przerwę.")
     async def pause(self, ctx: Context):
