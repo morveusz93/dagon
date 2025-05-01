@@ -1,4 +1,5 @@
 import asyncio
+import time
 
 import discord
 import wavelink
@@ -49,10 +50,10 @@ class Music(commands.Cog):
             await player.stop(force=True)
         try:
             tracks: list[wavelink.YouTubeTrack] = await wavelink.YouTubeTrack.search(query)
+            if not tracks:
+                return await ctx.send("Nie znaleziono podanego utwaoru, spróbuj z innym.")
             player.autoplay = True
-            print(f"Pobrane utwory: {tracks}")
             await player.play(tracks[0])
-            await asyncio.sleep(1)
             await ctx.send(f"Dagon zagra Wam: **{player.current.title}** *({int(player.current.duration // 1000 // 60)}:{int(player.current.duration // 1000 % 60):02})*")
         except Exception as e:
             await ctx.send(f"Niech to Cthulhu kopnie, coś nie współpracuje : \n{e}")
