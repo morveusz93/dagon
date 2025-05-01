@@ -28,8 +28,8 @@ class Music(commands.Cog):
         await ctx.send("Lękajcie się śmiertelnicy, oto nadchodzi Przedwieczny Dagon!")
         return player
 
-    @commands.command(brief="Wykonaj rytuał odesłania Dagon do jego wymiaru z nadzieją ze się powiedzie.", aliases=["l"])
-    async def leave(self, ctx: Context):
+    @commands.command(name="leave", brief="Wykonaj rytuał odesłania Dagon do jego wymiaru z nadzieją ze się powiedzie.", aliases=["l"])
+    async def _disconnect(self, ctx: Context):
         voice_client = ctx.voice_client
         if ctx.voice_client:
             await ctx.send("Tym razem udało się odesłać Dagona...")
@@ -47,7 +47,7 @@ class Music(commands.Cog):
             await ctx.invoke(self.bot.get_command("join"))
         player: wavelink.Player = ctx.voice_client
         if ctx.voice_client.is_playing() or ctx.voice_client.is_paused():
-            await player.stop(force=True)
+            await ctx.invoke(self.bot.get_command("stop"))
         try:
             tracks: list[wavelink.YouTubeTrack] = await wavelink.YouTubeTrack.search(query)
             if not tracks:
@@ -59,8 +59,8 @@ class Music(commands.Cog):
             await ctx.send(f"Niech to Cthulhu kopnie, coś nie współpracuje : \n{e}")
             raise e
 
-    @commands.command(brief="Ustaw głośność Dagona w przedziale 0-100.")
-    async def vol(self, ctx, volume: int) -> None:
+    @commands.command(name="vol", brief="Ustaw głośność Dagona w przedziale 0-100.")
+    async def _vol(self, ctx, volume: int) -> None:
         if ctx.voice_client is None:
             return await ctx.send("Żeby to zrobić musisz być na kanale głosowym.")
         if volume > 100 or volume < 0:
@@ -77,8 +77,8 @@ class Music(commands.Cog):
     async def _stop(self, ctx):
         player: wavelink.Player = ctx.guild.voice_client
         if player and player.is_playing():
-            await player.stop(force=True)
-            await ctx.send("Tym razem Dagon posłuchał i przestał grać.")
+            await player.stop()
+            await ctx.send("Dagon przestał grać bieżący utwór.")
         else:
             await ctx.send("Czujesz na sobie mrożący wzrok Dagona - on nic obecnie nie gra.")
 
