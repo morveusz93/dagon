@@ -1,21 +1,12 @@
-import asyncio
-import os
+import logging
 
-from cogs.fun import setup_fun
-from cogs.music import setup_music
-from cogs.rpg import setup_rpg
+from config import DISCORD_TOKEN
 from dagon import Dagon
 
-TOKEN = os.getenv("DISCORD_TOKEN")
+
+def main():
+    Dagon().run(DISCORD_TOKEN, log_level=logging.INFO, root_logger=True)
 
 
-async def main():
-    bot = Dagon()
-    async with bot:
-        await setup_music(bot)
-        await setup_rpg(bot)
-        await setup_fun(bot)
-        await bot.start(TOKEN)
-
-
-asyncio.run(main())
+if __name__ == "__main__":
+    main()

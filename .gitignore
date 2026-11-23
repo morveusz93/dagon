@@ -1,5 +1,4 @@
-/__pycache__
-*/__pycache__
-todo.txt
+__pycache__/
 .idea
 .env
+todo.txt

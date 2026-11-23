@@ -1,24 +1,30 @@
-# Dagon Bot - Discord Music Bot for YouTube
+# Dagon
 
-Dagon Bot is a simple and easy-to-use Discord bot that allows playing music from YouTube on your server. This bot is created using Discord.py.
+Bot discordowy z klimatem Przedwiecznego: rzuty kośćmi do RPG i obrazki na zawołanie.
 
-## How to Add Dagon Bot to Your Discord Server?
+## Komendy
 
-To add Dagon Bot to your Discord server, use [this link](https://discord.com/api/oauth2/authorize?client_id=1182739471033172081&permissions=3148800&scope=bot). Make sure you have the necessary permissions to add the bot to your server.
+Prefiks: `!!` (albo wzmianka `@Dagon`). Pełna lista: `!!help`.
 
-## Commands
+| Komenda | Opis |
+|---|---|
+| `!!roll 3d6` / `!!roll 2k10` | Rzut kośćmi (max 100 kości, max 100 ścianek) |
+| `!!motivate` (`!!mot`, `!!m`) | Motywujący obrazek z inspirobot.me |
+| `!!cat`, `!!dog`, `!!duck`, `!!fox` | Losowe zwierzaki |
 
-To see command use `!dhelp`
+## Uruchomienie
 
-## Auto-Leave Feature
+```sh
+cp .env.example .env   # uzupełnij DISCORD_TOKEN
+poetry install
+make start
+```
 
-Dagon Bot includes an auto-leave feature for your convenience. If the bot is the only member left in the voice channel, it will automatically leave the channel. This eliminates the need for users to manually issue a `!leave` command, making the user experience smoother and more intuitive.
+Docker:
 
-## How to Use the Bot?
+```sh
+make docker-build
+make docker-run
+```
 
-1. Add the bot to your server using the invite link.
-2. Type `!dplay <song-name></song-name>` or `!dplay <yt-link>` to start playing music.
-
-## Requirements
-
-Dagon Bot requires access to voice channels and the necessary permissions to play music on a Discord server.
+W Discord Developer Portal bot musi mieć włączony intent **Message Content**.

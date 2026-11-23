@@ -1,6 +1,12 @@
 import random
+import re
 
 from discord.ext import commands
+
+MAX_DICE = 100
+MAX_SIDES = 100
+DICE_PATTERN = re.compile(r"^(\d*)[dk](\d+)$")
+ERROR_MSG = "Błędna komenda. Podaj liczbę kości i ich rodzaj, np. 1d10 lub 3k6."
 
 
 class Rpg(commands.Cog):
@@ -8,53 +14,46 @@ class Rpg(commands.Cog):
         self.bot = bot
 
     @commands.command(
-        brief="Poproś Dagona o rzut kośćmi. Dagon posiada po 100 kości od tych z jednym oczkiem do tych ze 100 oczkami. Podaj liczbę kości i ich rodzaj, np 1d10"
+        brief="Poproś Dagona o rzut kośćmi, np. 1d10 albo 3k6.",
+        description=(
+            f"Dagon posiada po {MAX_DICE} kości od tych z jednym oczkiem "
+            f"do tych z {MAX_SIDES} oczkami. Podaj liczbę kości i ich rodzaj, np. 1d10."
+        ),
     )
-    async def roll(self, ctx, dices: str):
-        error_msg = "Błędna komenda. Podaj liczbę kości i ich rodzaj, np 1d10"
-        cmd = get_command_from_dices(dices)
-        if not cmd or len(cmd) > 2:
-            return await ctx.send(error_msg)
+    async def roll(self, ctx, dice: str = ""):
         try:
-            dice, number_of_dices = get_dices(cmd)
+            count, sides = parse_dice(dice)
         except ValueError:
-            return await ctx.send(error_msg)
-        rolls = roll_dices(number_of_dices, dice)
-        return await ctx.send(f"{ctx.author.mention}: {rolls}")
+            return await ctx.send(ERROR_MSG)
+        rolls = [random.randint(1, sides) for _ in range(count)]
+        await ctx.send(f"{ctx.author.mention}: {format_rolls(rolls, sides)}")
 
 
-async def setup_rpg(bot):
-    await bot.add_cog(Rpg(bot))
+def parse_dice(text: str) -> tuple[int, int]:
+    """Parse '3d6' / '3k6' / 'd20' into (count, sides)."""
+    match = DICE_PATTERN.match(text.strip().lower())
+    if not match:
+        raise ValueError(f"Invalid dice: {text!r}")
+    count = int(match.group(1) or 1)
+    sides = int(match.group(2))
+    if not (1 <= count <= MAX_DICE and 1 <= sides <= MAX_SIDES):
+        raise ValueError(f"Dice out of range: {text!r}")
+    return count, sides
 
 
-def roll_dices(number_of_dices: int, dice: int) -> str:
-    rolls = [random.randint(1, dice) for _ in range(number_of_dices)]
-    result = ""
-    for roll in rolls:
+def format_rolls(rolls: list[int], sides: int) -> str:
+    def fmt(roll: int) -> str:
         if roll == 1:
-            result += "*1* "
-        elif roll == dice:
-            result += f"**{roll}** "
-        else:
-            result += f"{roll} "
-    if number_of_dices > 1:
+            return "*1*"
+        if roll == sides:
+            return f"**{roll}**"
+        return str(roll)
+
+    result = " ".join(fmt(r) for r in rolls)
+    if len(rolls) > 1:
         result += f" = {sum(rolls)}"
-    return result.strip()
+    return result
 
 
-def get_command_from_dices(dices):
-    dices = dices.lower()
-    if "k" in dices:
-        return dices.split("k")
-    elif "d" in dices:
-        return dices.split("d")
-
-
-def get_dices(cmd: str) -> tuple[int, int]:
-    number_of_dices = 1
-    dice = int(cmd[-1])
-    if cmd[0]:
-        number_of_dices = int(cmd[0])
-    if dice > 100 or number_of_dices > 100:
-        raise ValueError("Too big number")
-    return dice, number_of_dices
+async def setup(bot):
+    await bot.add_cog(Rpg(bot))
