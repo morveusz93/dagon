@@ -37,6 +37,19 @@ MAYONNAISES = {
         "Z mgieł Warmii wyłania się Kętrzyński.",
         "Kętrzyński. Dagon szanuje odwagę wyznawców.",
     ],
+    "Roleski": [
+        "Roleski wynurza się z głębin. Dagon kiwa macką z uznaniem.",
+        "Dziś Roleski. Stara gwardia musi ustąpić.",
+    ],
+    "Hellmann's": [
+        "Hellmann's. Zza oceanu przypłynęło coś obcego. Dagon obserwuje.",
+        "Dziś Hellmann's. Głębiny tolerują przybysza. Na razie.",
+    ],
+    "Pomorski Ocetix": [
+        "Fale Bałtyku przyniosły Pomorski Ocetix. Dagon czuje się jak w domu.",
+        "Pomorski Ocetix. Morze zawsze wie najlepiej.",
+        "Dziś Pomorski Ocetix. Głębiny pozdrawiają Pomorze.",
+    ],
 }
 
 
