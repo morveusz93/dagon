@@ -1,4 +1,4 @@
-.PHONY: start test format docker-build docker-run
+.PHONY: start test lint format docker-build docker-run
 
 start:
 	poetry run python main.py
@@ -14,3 +14,6 @@ docker-run:
 
 test:
 	poetry run pytest -q
+
+lint:
+	poetry run black --check . && poetry run isort --check-only .

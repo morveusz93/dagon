@@ -4,13 +4,14 @@ Bot discordowy z klimatem Przedwiecznego: rzuty kośćmi do RPG i obrazki na zaw
 
 ## Komendy
 
-Prefiks: `!!` (albo wzmianka `@Dagon`). Pełna lista: `!!help`.
+Wszystkie komendy działają jako slash commands (`/roll 3d6`) i z prefiksem `!!` (`!!roll 3d6`, albo wzmianka `@Dagon`). Pełna lista: `/help`.
 
 | Komenda | Opis |
 |---|---|
-| `!!roll 3d6` / `!!roll 2k10` | Rzut kośćmi (max 100 kości, max 100 ścianek) |
-| `!!motivate` (`!!mot`, `!!m`) | Motywujący obrazek z inspirobot.me |
-| `!!cat`, `!!dog`, `!!duck`, `!!fox` | Losowe zwierzaki |
+| `/roll 3d6`, `/roll 2k10` | Rzut kośćmi (max 100 kości, max 100 ścianek) |
+| `/motivate` (`!!mot`, `!!m`) | Motywujący obrazek z inspirobot.me |
+| `/cat`, `/dog`, `/duck`, `/fox` | Losowe zwierzaki |
+| `/help` | Lista komend |
 
 ## Uruchomienie
 
@@ -18,6 +19,13 @@ Prefiks: `!!` (albo wzmianka `@Dagon`). Pełna lista: `!!help`.
 cp .env.example .env   # uzupełnij DISCORD_TOKEN
 poetry install
 make start
+```
+
+Testy i formatowanie (to samo sprawdza CI na GitHubie):
+
+```sh
+make test
+make lint     # make format, żeby poprawić
 ```
 
 Docker:
