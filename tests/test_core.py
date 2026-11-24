@@ -23,7 +23,7 @@ def test_help_lists_every_command(bot):
     text = "\n".join(f.value for f in embed.fields)
     for name in ["roll", "motivate", "cat", "dog", "duck", "fox", "help"]:
         assert f"`/{name}" in text
-    assert "`/roll <kosci>`" in text
+    assert "`/roll <rzut>`" in text
     assert "`!!m`" in text
     assert [f.name for f in embed.fields] == ["🎲 Kości", "🖼️ Malowidła", "ℹ️ Inne"]
 
@@ -32,6 +32,8 @@ def test_all_slash_descriptions_fit_discord_limit(bot):
     for cog in bot.cogs.values():
         for cmd in cog.get_commands():
             assert 1 <= len(cmd.description) <= 100, cmd.name
+            for param in cmd.app_command.parameters:
+                assert 1 <= len(param.description) <= 100, (cmd.name, param.name)
 
 
 @pytest.mark.asyncio

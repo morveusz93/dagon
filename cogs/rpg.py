@@ -22,10 +22,12 @@ class Rpg(commands.Cog, description="🎲 Kości"):
         self.bot = bot
 
     @commands.hybrid_command(description="Rzut kośćmi, np. 3d6, d20 albo 2k10.")
-    @app_commands.describe(kosci="Np. 3d6, d20 albo 2k10")
-    async def roll(self, ctx: commands.Context, kosci: str):
+    @app_commands.describe(
+        rzut="Ile kości i ile ścianek, np. 3d6 = trzy kości sześciościenne, d20 = jedna dwudziestościenna"
+    )
+    async def roll(self, ctx: commands.Context, rzut: str):
         try:
-            count, sides = parse_dice(kosci)
+            count, sides = parse_dice(rzut)
         except ValueError:
             raise DagonError(ERROR_MSG) from None
         rolls = [random.randint(1, sides) for _ in range(count)]
