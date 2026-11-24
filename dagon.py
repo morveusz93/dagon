@@ -6,9 +6,11 @@ from discord.ext import commands
 
 from config import COMMAND_PREFIX
 
+# Kolejność = kolejność sekcji w /help
 EXTENSIONS = (
-    "cogs.fun",
     "cogs.rpg",
+    "cogs.fun",
+    "cogs.core",
 )
 
 log = logging.getLogger(__name__)
@@ -23,7 +25,9 @@ class Dagon(commands.Bot):
         super().__init__(
             command_prefix=commands.when_mentioned_or(COMMAND_PREFIX),
             intents=intents,
+            help_command=None,
         )
+        self.text_prefix = COMMAND_PREFIX
         self.http_session: aiohttp.ClientSession | None = None
 
     async def setup_hook(self):
@@ -32,6 +36,8 @@ class Dagon(commands.Bot):
         )
         for ext in EXTENSIONS:
             await self.load_extension(ext)
+        synced = await self.tree.sync()
+        log.info("Synced %d slash commands", len(synced))
 
     async def close(self):
         if self.http_session:

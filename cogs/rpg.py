@@ -1,32 +1,35 @@
 import random
 import re
 
+import discord
+from discord import app_commands
 from discord.ext import commands
+
+import style
+from errors import DagonError
 
 MAX_DICE = 100
 MAX_SIDES = 100
 DICE_PATTERN = re.compile(r"^(\d*)[dk](\d+)$")
-ERROR_MSG = "Błędna komenda. Podaj liczbę kości i ich rodzaj, np. 1d10 lub 3k6."
+ERROR_MSG = (
+    "Podaj liczbę kości i ich rodzaj, np. `3d6`, `d20` albo `2k10`. "
+    f"Dagon rzuci maksymalnie {MAX_DICE} kośćmi naraz, każda do {MAX_SIDES} ścianek."
+)
 
 
-class Rpg(commands.Cog):
+class Rpg(commands.Cog, description="🎲 Kości"):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(
-        brief="Poproś Dagona o rzut kośćmi, np. 1d10 albo 3k6.",
-        description=(
-            f"Dagon posiada po {MAX_DICE} kości od tych z jednym oczkiem "
-            f"do tych z {MAX_SIDES} oczkami. Podaj liczbę kości i ich rodzaj, np. 1d10."
-        ),
-    )
-    async def roll(self, ctx, dice: str = ""):
+    @commands.hybrid_command(description="Rzut kośćmi, np. 3d6, d20 albo 2k10.")
+    @app_commands.describe(kosci="Np. 3d6, d20 albo 2k10")
+    async def roll(self, ctx: commands.Context, kosci: str):
         try:
-            count, sides = parse_dice(dice)
+            count, sides = parse_dice(kosci)
         except ValueError:
-            return await ctx.send(ERROR_MSG)
+            raise DagonError(ERROR_MSG) from None
         rolls = [random.randint(1, sides) for _ in range(count)]
-        await ctx.send(f"{ctx.author.mention}: {format_rolls(rolls, sides)}")
+        await ctx.send(embed=roll_embed(ctx.author.mention, count, sides, rolls))
 
 
 def parse_dice(text: str) -> tuple[int, int]:
@@ -42,6 +45,8 @@ def parse_dice(text: str) -> tuple[int, int]:
 
 
 def format_rolls(rolls: list[int], sides: int) -> str:
+    """Jedynki kursywą, maksima pogrubione."""
+
     def fmt(roll: int) -> str:
         if roll == 1:
             return "*1*"
@@ -49,10 +54,14 @@ def format_rolls(rolls: list[int], sides: int) -> str:
             return f"**{roll}**"
         return str(roll)
 
-    result = " ".join(fmt(r) for r in rolls)
+    return " · ".join(fmt(r) for r in rolls)
+
+
+def roll_embed(mention: str, count: int, sides: int, rolls: list[int]) -> discord.Embed:
+    description = f"{mention} rzuca **{count}d{sides}**\n\n{format_rolls(rolls, sides)}"
     if len(rolls) > 1:
-        result += f" = {sum(rolls)}"
-    return result
+        description += f"\n\nSuma: **{sum(rolls)}**"
+    return style.embed(description, title="🎲 Rzut kośćmi")
 
 
 async def setup(bot):

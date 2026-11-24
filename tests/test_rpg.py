@@ -1,6 +1,6 @@
 import pytest
 
-from cogs.rpg import format_rolls, parse_dice
+from cogs.rpg import format_rolls, parse_dice, roll_embed
 
 
 @pytest.mark.parametrize(
@@ -25,9 +25,16 @@ def test_parse_dice_invalid(text):
         parse_dice(text)
 
 
-def test_format_single_roll_has_no_sum():
-    assert format_rolls([4], 6) == "4"
+def test_format_marks_min_and_max():
+    assert format_rolls([1, 6, 3], 6) == "*1* · **6** · 3"
 
 
-def test_format_marks_min_and_max_and_sums():
-    assert format_rolls([1, 6, 3], 6) == "*1* **6** 3 = 10"
+def test_roll_embed_single_roll_has_no_sum():
+    embed = roll_embed("@tester", 1, 20, [7])
+    assert "@tester rzuca **1d20**" in embed.description
+    assert "Suma" not in embed.description
+
+
+def test_roll_embed_multiple_rolls_has_sum():
+    embed = roll_embed("@tester", 3, 6, [1, 6, 3])
+    assert embed.description.endswith("Suma: **10**")

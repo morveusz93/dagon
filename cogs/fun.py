@@ -1,9 +1,14 @@
+import asyncio
 import io
 import logging
+from typing import Awaitable, Callable
 
 import aiohttp
 import discord
 from discord.ext import commands
+
+import style
+from errors import DagonError
 
 log = logging.getLogger(__name__)
 
@@ -13,8 +18,18 @@ DOGS_API_URL = "https://api.thedogapi.com/v1/images/search?limit=1"
 DUCK_API_URL = "https://random-d.uk/api/v2/random"
 FOX_API_URL = "https://randomfox.ca/floof/"
 
+API_ERROR = "Dagonowi zabrakło dziś natchnienia. Spróbuj za chwilę."
+FETCH_ERRORS = (
+    aiohttp.ClientError,
+    asyncio.TimeoutError,
+    KeyError,
+    IndexError,
+    TypeError,
+    ValueError,
+)
 
-class Fun(commands.Cog):
+
+class Fun(commands.Cog, description="🖼️ Malowidła"):
     def __init__(self, bot):
         self.bot = bot
 
@@ -22,60 +37,71 @@ class Fun(commands.Cog):
     def session(self) -> aiohttp.ClientSession:
         return self.bot.http_session
 
-    async def _fetch_json(self, url: str):
+    async def _json_field(self, url: str, *path):
         async with self.session.get(url) as resp:
             resp.raise_for_status()
-            return await resp.json(content_type=None)
+            data = await resp.json(content_type=None)
+        for key in path:
+            data = data[key]
+        return data
 
-    async def _send_picture(self, ctx: commands.Context, img_url: str):
-        async with self.session.get(img_url) as resp:
+    async def _motivation_url(self) -> str:
+        async with self.session.get(MOTIVATE_API_URL) as resp:
             resp.raise_for_status()
-            img = await resp.read()
-        filename = "dagon" + _extension(img_url)
-        await ctx.send(
-            f"Dagon przygotował malowidło, {ctx.author.mention}:",
-            file=discord.File(io.BytesIO(img), filename),
+            return (await resp.text()).strip()
+
+    async def _paint(
+        self,
+        ctx: commands.Context,
+        title: str,
+        get_url: Callable[[], Awaitable[str]],
+    ):
+        async with ctx.typing():
+            try:
+                img_url = await get_url()
+                async with self.session.get(img_url) as resp:
+                    resp.raise_for_status()
+                    img = await resp.read()
+            except FETCH_ERRORS as e:
+                log.warning("Fetching picture for %s failed: %r", ctx.command, e)
+                raise DagonError(API_ERROR) from e
+
+            filename = "dagon" + _extension(img_url)
+            embed = style.embed(
+                f"Dagon namalował to dla {ctx.author.mention}.", title=title
+            )
+            embed.set_image(url=f"attachment://{filename}")
+            await ctx.send(embed=embed, file=discord.File(io.BytesIO(img), filename))
+
+    @commands.hybrid_command(
+        description="Któż motywuje lepiej od Dagona?", aliases=["mot", "m"]
+    )
+    async def motivate(self, ctx):
+        await self._paint(ctx, "✨ Motywacja", self._motivation_url)
+
+    @commands.hybrid_command(description="Dagon jak wszyscy uwielbia kotki.")
+    async def cat(self, ctx):
+        await self._paint(
+            ctx, "🐈 Kotek", lambda: self._json_field(CATS_API_URL, 0, "url")
         )
 
-    async def cog_command_error(self, ctx: commands.Context, error):
-        original = getattr(error, "original", error)
-        if isinstance(original, (aiohttp.ClientError, TimeoutError, KeyError)):
-            log.warning("Fun command %s failed: %r", ctx.command, original)
-            await ctx.send("Dagon nie zdołał dziś nic namalować. Spróbuj później.")
-        else:
-            raise error
-
-    @commands.command(brief="Któż motywuje lepiej od Dagona?", aliases=["mot", "m"])
-    async def motivate(self, ctx):
-        async with ctx.typing():
-            async with self.session.get(MOTIVATE_API_URL) as resp:
-                resp.raise_for_status()
-                img_url = (await resp.text()).strip()
-            await self._send_picture(ctx, img_url)
-
-    @commands.command(brief="Dagon jak wszyscy uwielbia kotki.")
-    async def cat(self, ctx):
-        async with ctx.typing():
-            data = await self._fetch_json(CATS_API_URL)
-            await self._send_picture(ctx, data[0]["url"])
-
-    @commands.command(brief="Dagon uwielbia również pieski.")
+    @commands.hybrid_command(description="Dagon uwielbia również pieski.")
     async def dog(self, ctx):
-        async with ctx.typing():
-            data = await self._fetch_json(DOGS_API_URL)
-            await self._send_picture(ctx, data[0]["url"])
+        await self._paint(
+            ctx, "🐕 Piesek", lambda: self._json_field(DOGS_API_URL, 0, "url")
+        )
 
-    @commands.command(brief="Dagon uwielbia malować kaczuszki.")
+    @commands.hybrid_command(description="Dagon uwielbia malować kaczuszki.")
     async def duck(self, ctx):
-        async with ctx.typing():
-            data = await self._fetch_json(DUCK_API_URL)
-            await self._send_picture(ctx, data["url"])
+        await self._paint(
+            ctx, "🦆 Kaczuszka", lambda: self._json_field(DUCK_API_URL, "url")
+        )
 
-    @commands.command(brief="Dagon z przyjemnością namaluje Ci liska!")
+    @commands.hybrid_command(description="Dagon z przyjemnością namaluje Ci liska!")
     async def fox(self, ctx):
-        async with ctx.typing():
-            data = await self._fetch_json(FOX_API_URL)
-            await self._send_picture(ctx, data["image"])
+        await self._paint(
+            ctx, "🦊 Lisek", lambda: self._json_field(FOX_API_URL, "image")
+        )
 
 
 def _extension(url: str) -> str:
