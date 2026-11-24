@@ -10,6 +10,7 @@ from config import COMMAND_PREFIX
 EXTENSIONS = (
     "cogs.rpg",
     "cogs.fun",
+    "cogs.mayo",
     "cogs.core",
 )
 
