@@ -47,16 +47,17 @@ def parse_dice(text: str) -> tuple[int, int]:
 
 
 def format_rolls(rolls: list[int], sides: int) -> str:
-    """Jedynki kursywą, maksima pogrubione."""
+    """Każdy wynik jako kafelek; jedynka z czaszką, maksimum z gwiazdką."""
 
     def fmt(roll: int) -> str:
-        if roll == 1:
-            return "*1*"
+        tile = f"`{roll}`"
         if roll == sides:
-            return f"**{roll}**"
-        return str(roll)
+            return tile + "⭐"
+        if roll == 1:
+            return tile + "💀"
+        return tile
 
-    return " · ".join(fmt(r) for r in rolls)
+    return "  ".join(fmt(r) for r in rolls)
 
 
 def roll_embed(mention: str, count: int, sides: int, rolls: list[int]) -> discord.Embed:

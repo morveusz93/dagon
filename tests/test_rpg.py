@@ -25,8 +25,12 @@ def test_parse_dice_invalid(text):
         parse_dice(text)
 
 
-def test_format_marks_min_and_max():
-    assert format_rolls([1, 6, 3], 6) == "*1* · **6** · 3"
+def test_format_rolls_as_tiles_marking_min_and_max():
+    assert format_rolls([1, 6, 3], 6) == "`1`💀  `6`⭐  `3`"
+
+
+def test_format_single_sided_die_counts_as_max():
+    assert format_rolls([1], 1) == "`1`⭐"
 
 
 def test_roll_embed_single_roll_has_no_sum():
