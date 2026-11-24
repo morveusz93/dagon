@@ -1,8 +1,13 @@
+import datetime as dt
+import hashlib
 import logging
 import re
+from zoneinfo import ZoneInfo
 
 import discord
 from discord.ext import commands
+
+import style
 
 log = logging.getLogger(__name__)
 
@@ -10,10 +15,46 @@ log = logging.getLogger(__name__)
 WINIARY = re.compile(r"\b(?:Winiary|WINIARY)\b")
 REACTION = "🤮"
 
+TIMEZONE = ZoneInfo("Europe/Warsaw")
+
+# Majonez -> możliwe orzeczenia Dagona
+MAYONNAISES = {
+    "Kielecki": [
+        "Głębiny przemówiły jasno. Dziś Kielecki.",
+        "Nawet macki Dagona drżą z zachwytu. Kielecki.",
+        "Kielecki. Dagon nie przyjmuje odwołań.",
+    ],
+    "Winiary": [
+        "Dagon sprawdził trzy razy. Niestety wyszło Winiary. 🤮",
+        "Gwiazdy ułożyły się źle. Dziś Winiary. Dagon odchodzi w głębiny.",
+        "Winiary. Dagon nie chce o tym rozmawiać.",
+    ],
+    "Motyl": [
+        "Dziś skrzydła rozwinął Motyl. Dagon jest zaskoczony nie mniej niż Ty.",
+        "Motyl. Cichy faworyt głębin.",
+    ],
+    "Kętrzyński": [
+        "Z mgieł Warmii wyłania się Kętrzyński.",
+        "Kętrzyński. Dagon szanuje odwagę wyznawców.",
+    ],
+}
+
 
 class Mayo(commands.Cog, description="🥚 Majonez"):
     def __init__(self, bot):
         self.bot = bot
+
+    @commands.hybrid_command(description="Majonez dnia według Dagona.")
+    async def majonez(self, ctx: commands.Context):
+        day = today()
+        guild_id = ctx.guild.id if ctx.guild else 0
+        name, verdict = mayo_of_the_day(day, guild_id)
+        embed = style.embed(
+            f"Dzisiejszym majonezem jest **{name}**.\n\n*{verdict}*",
+            title="🥚 Majonez dnia",
+        )
+        embed.set_footer(text=day.strftime("%d.%m.%Y"))
+        await ctx.send(embed=embed)
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
@@ -27,6 +68,20 @@ class Mayo(commands.Cog, description="🥚 Majonez"):
 
 def mentions_winiary(text: str) -> bool:
     return WINIARY.search(text) is not None
+
+
+def today() -> dt.date:
+    return dt.datetime.now(TIMEZONE).date()
+
+
+def mayo_of_the_day(day: dt.date, guild_id: int) -> tuple[str, str]:
+    """Ten sam wynik przez cały dzień na danym serwerze - bez zapisywania stanu."""
+    digest = hashlib.sha256(f"{day.isoformat()}:{guild_id}".encode()).digest()
+    seed = int.from_bytes(digest[:8], "big")
+    names = list(MAYONNAISES)
+    name = names[seed % len(names)]
+    verdicts = MAYONNAISES[name]
+    return name, verdicts[(seed // len(names)) % len(verdicts)]
 
 
 async def setup(bot):

@@ -6,6 +6,7 @@ from discord.ext import commands
 import style
 from cogs.core import GENERIC_ERROR, Core, help_embed
 from cogs.fun import Fun
+from cogs.mayo import Mayo
 from cogs.rpg import Rpg
 from errors import DagonError
 
@@ -13,7 +14,7 @@ from errors import DagonError
 @pytest.fixture
 def bot():
     bot = MagicMock(text_prefix="!!")
-    cogs = [Rpg(bot), Fun(bot), Core(bot)]
+    cogs = [Rpg(bot), Fun(bot), Mayo(bot), Core(bot)]
     bot.cogs = {c.qualified_name: c for c in cogs}
     return bot
 
@@ -21,11 +22,16 @@ def bot():
 def test_help_lists_every_command(bot):
     embed = help_embed(bot)
     text = "\n".join(f.value for f in embed.fields)
-    for name in ["roll", "motivate", "cat", "dog", "duck", "fox", "help"]:
+    for name in ["roll", "motivate", "cat", "dog", "duck", "fox", "majonez", "help"]:
         assert f"`/{name}" in text
     assert "`/roll <rzut>`" in text
     assert "`!!m`" in text
-    assert [f.name for f in embed.fields] == ["🎲 Kości", "🖼️ Malowidła", "ℹ️ Inne"]
+    assert [f.name for f in embed.fields] == [
+        "🎲 Kości",
+        "🖼️ Malowidła",
+        "🥚 Majonez",
+        "ℹ️ Inne",
+    ]
 
 
 def test_all_slash_descriptions_fit_discord_limit(bot):
