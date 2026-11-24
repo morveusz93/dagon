@@ -6,8 +6,8 @@ from discord.ext import commands
 
 log = logging.getLogger(__name__)
 
-# "winiary" w odmianie, bez łapania np. "winiarz" czy "winiarnia"
-WINIARY = re.compile(r"\bwiniar(?:y|ów|om|ach|ami)\b", re.IGNORECASE)
+# Tylko "Winiary" i "WINIARY" - bez odmiany i bez małych liter
+WINIARY = re.compile(r"\b(?:Winiary|WINIARY)\b")
 REACTION = "🤮"
 
 
