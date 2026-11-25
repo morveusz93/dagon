@@ -17,7 +17,10 @@ class Core(commands.Cog, description="ℹ️ Inne"):
 
     @commands.hybrid_command(description="Pokaż, co potrafi Dagon.")
     async def help(self, ctx: commands.Context):
-        await ctx.send(embed=help_embed(self.bot), ephemeral=True)
+        await ctx.send(
+            embed=help_embed(self.bot, ctx.guild.id if ctx.guild else None),
+            ephemeral=True,
+        )
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx: commands.Context, error):
@@ -38,7 +41,7 @@ def usage(command: commands.Command) -> str:
     return f"/{command.name} {command.signature}".strip()
 
 
-def help_embed(bot) -> discord.Embed:
+def help_embed(bot, guild_id: int | None = None) -> discord.Embed:
     prefix = getattr(bot, "text_prefix", "!!")
     embed = style.embed(
         f"Wpisz `/` i wybierz komendę albo użyj prefiksu `{prefix}`, "
@@ -54,6 +57,10 @@ def help_embed(bot) -> discord.Embed:
             if cmd.aliases:
                 line += " (" + ", ".join(f"`{prefix}{a}`" for a in cmd.aliases) + ")"
             lines.append(line)
+        # Slash-only commands that exist on some servers only (e.g. /postac cthulhu).
+        extra = getattr(cog, "help_lines", None)
+        if callable(extra):
+            lines += extra(guild_id)
         if lines:
             embed.add_field(
                 name=cog.description or cog.qualified_name,

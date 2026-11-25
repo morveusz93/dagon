@@ -4,13 +4,14 @@ import aiohttp
 import discord
 from discord.ext import commands
 
-from config import COMMAND_PREFIX
+from config import COC, COMMAND_PREFIX
 
 # Kolejność = kolejność sekcji w /help
 EXTENSIONS = (
     "cogs.rpg",
     "cogs.fun",
     "cogs.mayo",
+    "cogs.postac",  # loads only when COC_* is configured
     "cogs.core",
 )
 
@@ -39,6 +40,15 @@ class Dagon(commands.Bot):
             await self.load_extension(ext)
         synced = await self.tree.sync()
         log.info("Synced %d slash commands", len(synced))
+        if COC is not None:
+            # /postac lives on the party's server only, so it needs its own guild sync.
+            guild = discord.Object(id=COC.guild_id)
+            synced = await self.tree.sync(guild=guild)
+            log.info("Synced %d slash commands for guild %s", len(synced), COC.guild_id)
+        else:
+            log.info(
+                "/postac is off (COC_APP_URL, COC_LINK_SECRET or COC_GUILD_ID missing)"
+            )
 
     async def close(self):
         if self.http_session:
