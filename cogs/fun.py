@@ -33,6 +33,7 @@ OTTERS = 526556  # podrodzina Lutrinae
 CAPYBARAS = 71855  # rodzaj Hydrochoerus
 SEALS = 41687  # rodzina Phocidae (foki właściwe)
 RACCOONS = 41661  # rodzaj Procyon
+FUNGI = 47170  # królestwo Fungi, łącznie z porostami
 
 API_ERROR = "Dagonowi zabrakło dziś natchnienia. Spróbuj za chwilę."
 FETCH_ERRORS = (
@@ -178,6 +179,12 @@ class Fun(commands.Cog, description="🖼️ Malowidła"):
     )
     async def raccoon(self, ctx):
         await self._paint_inat(ctx, "🦝 Szop", RACCOONS)
+
+    @commands.hybrid_command(
+        description="Dagon namaluje Ci grzybka z wilgotnych lasów."
+    )
+    async def mushroom(self, ctx):
+        await self._paint_inat(ctx, "🍄 Grzybek", FUNGI)
 
 
 def _extension(url: str) -> str:
