@@ -161,6 +161,7 @@ INAT_PHOTO = {
         ("otter", fun.OTTERS),
         ("capybara", fun.CAPYBARAS),
         ("seal", fun.SEALS),
+        ("raccoon", fun.RACCOONS),
     ],
 )
 async def test_inat_commands_send_large_photo_with_species_and_attribution(

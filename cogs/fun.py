@@ -32,6 +32,7 @@ HEDGEHOGS = 846194  # podrodzina Erinaceinae
 OTTERS = 526556  # podrodzina Lutrinae
 CAPYBARAS = 71855  # rodzaj Hydrochoerus
 SEALS = 41687  # rodzina Phocidae (foki właściwe)
+RACCOONS = 41661  # rodzaj Procyon
 
 API_ERROR = "Dagonowi zabrakło dziś natchnienia. Spróbuj za chwilę."
 FETCH_ERRORS = (
@@ -171,6 +172,12 @@ class Fun(commands.Cog, description="🖼️ Malowidła"):
     @commands.hybrid_command(description="Dagon namaluje Ci foczkę prosto z morza.")
     async def seal(self, ctx):
         await self._paint_inat(ctx, "🦭 Foczka", SEALS)
+
+    @commands.hybrid_command(
+        description="Dagon namaluje Ci szopa, mistrza nocnych rabunków."
+    )
+    async def raccoon(self, ctx):
+        await self._paint_inat(ctx, "🦝 Szop", RACCOONS)
 
 
 def _extension(url: str) -> str:
