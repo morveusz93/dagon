@@ -131,3 +131,95 @@ async def test_api_failure_raises_user_facing_error(ctx, response):
     with pytest.raises(DagonError):
         await cog.fox.callback(cog, ctx)
     ctx.send.assert_not_awaited()
+
+
+def inat_response(photos, total=500):
+    return {
+        "total_results": total,
+        "results": [
+            {
+                "taxon": {"name": "Strix aluco", "preferred_common_name": "Tawny Owl"},
+                "photos": photos,
+            }
+        ],
+    }
+
+
+INAT_PHOTO = {
+    "url": "https://i/photos/1/square.jpg",
+    "license_code": "cc-by",
+    "attribution": "(c) Ktoś, some rights reserved (CC BY)",
+}
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "command, taxon",
+    [
+        ("owl", fun.OWLS),
+        ("hedgehog", fun.HEDGEHOGS),
+        ("otter", fun.OTTERS),
+        ("capybara", fun.CAPYBARAS),
+        ("seal", fun.SEALS),
+    ],
+)
+async def test_inat_commands_send_large_photo_with_species_and_attribution(
+    ctx, command, taxon
+):
+    cog = make_cog(
+        {
+            fun.INAT_API_URL.format(taxon=taxon, page=1): FakeResponse(
+                json=inat_response(
+                    [{**INAT_PHOTO, "license_code": "cc-by-nc"}, INAT_PHOTO]
+                )
+            ),
+            "https://i/photos/1/large.jpg": FakeResponse(),
+        }
+    )
+
+    await getattr(cog, command).callback(cog, ctx)
+
+    embed = ctx.send.call_args.kwargs["embed"]
+    assert ctx.send.call_args.kwargs["file"].filename == "dagon.jpg"
+    assert embed.footer.text == "Tawny Owl · (c) Ktoś, some rights reserved (CC BY)"
+
+
+@pytest.mark.asyncio
+async def test_inat_draws_page_within_known_total(monkeypatch):
+    drawn = []
+    monkeypatch.setattr(fun.random, "randint", lambda a, b: drawn.append(b) or b)
+    url = fun.INAT_API_URL.format
+    cog = make_cog(
+        {
+            url(taxon=1, page=1): FakeResponse(json=inat_response([INAT_PHOTO], 30)),
+            url(taxon=1, page=30): FakeResponse(json=inat_response([INAT_PHOTO], 30)),
+            url(taxon=2, page=1): FakeResponse(
+                json=inat_response([INAT_PHOTO], 10**6)
+            ),
+            url(taxon=2, page=fun.INAT_MAX_PAGE): FakeResponse(
+                json=inat_response([INAT_PHOTO])
+            ),
+        }
+    )
+
+    for taxon in (1, 1, 2, 2):
+        await cog._inat_photo(taxon)
+
+    assert drawn == [1, 30, 1, fun.INAT_MAX_PAGE]
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "payload",
+    [
+        {"total_results": 0, "results": []},
+        inat_response([{**INAT_PHOTO, "license_code": "cc-by-nc"}]),
+    ],
+)
+async def test_inat_without_usable_photo_raises_user_facing_error(ctx, payload):
+    cog = make_cog(
+        {fun.INAT_API_URL.format(taxon=fun.OWLS, page=1): FakeResponse(json=payload)}
+    )
+
+    with pytest.raises(DagonError):
+        await cog.owl.callback(cog, ctx)

@@ -10,7 +10,7 @@ Wszystkie komendy działają jako slash commands (`/roll 3d6`) i z prefiksem `!!
 |---|---|
 | `/roll 3d6`, `/roll 2k10` | Rzut kośćmi (max 100 kości, max 100 ścianek) |
 | `/motivate` (`!!mot`, `!!m`) | Motywujący obrazek z inspirobot.me |
-| `/cat`, `/dog`, `/duck`, `/fox` | Losowe zwierzaki |
+| `/cat`, `/dog`, `/duck`, `/fox`, `/owl`, `/hedgehog`, `/otter`, `/capybara`, `/seal` | Losowe zwierzaki |
 | `/majonez` | Majonez dnia według Dagona (jeden na serwer na dzień) |
 | `/help` | Lista komend |
 
