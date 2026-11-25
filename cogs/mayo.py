@@ -11,8 +11,8 @@ import style
 
 log = logging.getLogger(__name__)
 
-# Tylko "Winiary" i "WINIARY" - bez odmiany i bez małych liter
-WINIARY = re.compile(r"\b(?:Winiary|WINIARY)\b")
+# "winiary" zapisane dowolnie (winiary, Winiary, WiNiArY...) - bez odmiany
+WINIARY = re.compile(r"\bwiniary\b", re.IGNORECASE)
 REACTION = "🤮"
 
 TIMEZONE = ZoneInfo("Europe/Warsaw")

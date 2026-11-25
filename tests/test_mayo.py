@@ -10,7 +10,15 @@ from cogs.mayo import MAYONNAISES, REACTION, Mayo, mayo_of_the_day, mentions_win
 
 @pytest.mark.parametrize(
     "text",
-    ["Winiary", "Winiary to najlepszy majonez", "WINIARY!!!", "a może (Winiary)?"],
+    [
+        "Winiary",
+        "winiary",
+        "WiNiArY",
+        "wINIARY",
+        "Winiary to najlepszy majonez",
+        "WINIARY!!!",
+        "a może (winiary)?",
+    ],
 )
 def test_detects_winiary(text):
     assert mentions_winiary(text)
@@ -19,8 +27,6 @@ def test_detects_winiary(text):
 @pytest.mark.parametrize(
     "text",
     [
-        "winiary",
-        "WiNiArY",
         "nie ma lepszego od winiarów",
         "w Winiarach",
         "Winiarski",
