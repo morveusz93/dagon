@@ -1,19 +1,10 @@
 import datetime as dt
 import hashlib
-import logging
-import re
 from zoneinfo import ZoneInfo
 
-import discord
 from discord.ext import commands
 
 import style
-
-log = logging.getLogger(__name__)
-
-# "winiary" zapisane dowolnie (winiary, Winiary, WiNiArY...) - bez odmiany
-WINIARY = re.compile(r"\bwiniary\b", re.IGNORECASE)
-REACTION = "🤮"
 
 TIMEZONE = ZoneInfo("Europe/Warsaw")
 
@@ -68,19 +59,6 @@ class Mayo(commands.Cog, description="🥚 Majonez"):
         )
         embed.set_footer(text=day.strftime("%d.%m.%Y"))
         await ctx.send(embed=embed)
-
-    @commands.Cog.listener()
-    async def on_message(self, message: discord.Message):
-        if message.author.bot or not mentions_winiary(message.content):
-            return
-        try:
-            await message.add_reaction(REACTION)
-        except discord.HTTPException as e:  # np. brak uprawnienia Add Reactions
-            log.warning("Could not react in #%s: %r", message.channel, e)
-
-
-def mentions_winiary(text: str) -> bool:
-    return WINIARY.search(text) is not None
 
 
 def today() -> dt.date:
